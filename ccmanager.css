@@ -1,0 +1,467 @@
+@charset"UTF-8";
+
+/* CSS Document */
+html,
+body {
+  margin: 1em;
+  padding: 0em;
+  font-family: 'Open Sans', sans-serif;
+  color: #494949;
+}
+div#wrapper .wrap {
+  width: 300px;
+}
+
+div#wrapLogin {
+  display: grid;
+  place-items: center;
+}
+
+
+/* Login */
+
+.group-form {
+  width: 100%;
+}
+form {
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  text-align: left;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+input[type="text"],
+input[type="password"],
+select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+button {
+  background-color: #4285F4;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #555;
+}
+
+.btnTransfer {
+    background-color: #109080;
+}
+
+btnTransfer:hover {
+  background-color: #109090;
+}
+/* Estilo para el mensaje de estado */
+#statusMessage {
+  text-align: center;
+  color: #333;
+  margin-top: 10px;
+  font-size: 16px;
+}
+/*end login*/
+/* Estilos para el contenedor principal */
+#callControl {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border-radius: 5px;
+}
+.card-header.headerPhone p {
+    padding: 0;
+    margin: 0;
+}
+.card-header.headerPhone p#title {
+    font-size: 20px;
+}
+
+.card-header.headerPhone p#version {
+    font-size: 13px;
+    font-style: italic;
+}
+
+/* Estilos para el campo de entrada */
+
+
+.call-input input {
+  width: 87%;
+  padding: 5px;
+  border-radius: 3px;
+}
+
+span.input-group-btn {
+    width: 10%;
+    display: inline-block;
+}
+
+.wrapInputCall {
+    width: 84%;
+    margin: auto;
+}
+button#btnDeleteDial:active {
+    border: 1px solid white;
+}
+/* Estilos para el bot車n de llamada */
+.call-button {
+  background-color: #0074cc;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  text-align: center;
+}
+
+.call-button i {
+  margin-right: 5px;
+}
+
+/* Estilos para el 赤cono de llamada */
+.fa-phone::before {
+  content: "\f095";
+  font-family: "Font Awesome 5 Free";
+}
+
+
+.callInfo {
+  width: 190px;
+  height: 70px;
+  float: left;
+}
+
+#connectedCall .callInfo {
+  width: 240px;
+}
+
+#dialPad div {
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+
+  /*
+    Introduced in IE 10.
+    See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+    */
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.callInfo h3 {
+  color: #389400;
+  margin: 10px 0 10px 0;
+}
+
+.callInfo p {
+  margin: 0px 25px 0px 0px;
+  float: left;
+}
+
+#answer,
+#hangUp,
+#reject,
+#mute {
+  color: #FFF;
+  background-color: #389400;
+  width: 50px;
+  height: 50px;
+  float: right;
+  text-align: center;
+  font-size: 30px;
+  margin: 10px 0px 10px 0px;
+  border-radius: 25px 25px 25px 25px;
+  -moz-border-radius: 25px 25px 25px 25px;
+  -webkit-border-radius: 25px 25px 25px 25px;
+  cursor: pointer;
+  cursor: hand;
+}
+
+div#connectCall span {
+  text-align: center;
+  width: 100%;
+}
+
+#hangUp,
+#reject {
+  /* IE 9 */
+  /* Chrome, Safari, Opera */
+  transform: rotate(135deg);
+}
+
+#hangUp {
+  background-color: #A90002;
+}
+
+#reject {
+  background-color: #FFF;
+  color: #A90002;
+  margin-right: 10px;
+}
+
+#mute {
+  color: #FFF;
+  background-color: #389400;
+  width: 260px;
+  height: 50px;
+  font-size: 30px;
+  text-align: center;
+  margin: 20px 20px 0px 20px;
+  border-radius: 5px 5px 5px 5px;
+  -moz-border-radius: 5px 5px 5px 5px;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  cursor: pointer;
+  cursor: hand;
+}
+
+#mute {
+  color: #545454;
+  margin: 0 auto;
+  width: 50px;
+  height: 50px;
+  margin: 15px 125px 10px 20px;
+  border-radius: 25px 25px 25px 25px;
+  -moz-border-radius: 25px 25px 25px 25px;
+  -webkit-border-radius: 25px 25px 25px 25px;
+  background-color: #FFF;
+}
+
+.muteActive {
+  color: #FFF;
+  background-color: #389400;
+}
+
+#dialPad {
+  width: 240px;
+  height: 250px;
+  margin: 0 auto;
+  margin-bottom: 8px;
+}
+
+#dialPad div {
+  float: left;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  font-size: 26px;
+  margin: 10px 15px 0px 15px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  border-radius: 25px 25px 25px 25px;
+  -moz-border-radius: 25px 25px 25px 25px;
+  -webkit-border-radius: 25px 25px 25px 25px;
+  border: 1px solid #E8E8E8;
+  padding-top: 5px;
+}
+
+#dialPad div:hover {
+  background-color: #2196F3;
+  color: #FFF;
+  cursor: pointer;
+  cursor: hand;
+}
+
+#dialPad div:active {
+  background-color: #1681d5;
+  box-shadow: 0px 1px 7px 2px rgba(0, 0, 0, 0.45);
+  border: none;
+}
+
+.fa {
+  margin-top: 11px;
+}
+
+#answer .fa {
+  -webkit-animation: callp 1s;
+  animation: callp 1s;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-direction: alternate;
+  -webkit-animation-play-state: running;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-play-state: running;
+}
+
+@-webkit-keyframes callp {
+  from {
+    color: #FFF;
+  }
+
+  to {
+    color: #389400;
+  }
+}
+
+@keyframes callp {
+  from {
+    color: #FFF;
+  }
+
+  to {
+    color: #389400;
+  }
+}
+
+#answer {
+  -webkit-animation: call 1s;
+  animation: call 1s;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-direction: alternate;
+  -webkit-animation-play-state: running;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-play-state: running;
+}
+
+@-webkit-keyframes call {
+  from {
+    background: #389400;
+  }
+
+  to {
+    background: #FFF;
+  }
+}
+
+@keyframes call {
+  from {
+    background: #389400;
+  }
+
+  to {
+    background: #FFF;
+  }
+}
+
+ /* Agrega estilos CSS según sea necesario */
+ .password-input-container {
+  position: relative;
+}
+
+.toggle-password {
+  position: relative;
+  top: 40%;
+  transform: translateY(-48%);
+  cursor: pointer;
+  background: #e6e4e7;
+  padding: 8px;
+  height: 47px;
+}
+
+span#revealPassword i {
+  position: relative;
+  top: -5px;
+}
+
+.wrapTitleLogout .wrapTitle, .wrapTitleLogout .logoutButton {
+    display: inline-block;
+    width: 49%;
+    vertical-align: top;
+}
+
+.wrapTitleLogout .logoutButton {
+    width: 14px;
+    float: right;
+}
+
+.logoutButton {
+    background: #f8f8f8f5;
+}
+#logoutButton {
+    float: right;
+    border: none;
+    position: relative;
+    color: #606d73;
+    padding: 0;
+    background: none;
+}
+button#clearLogButton i {
+  padding: 0;
+  margin: 5px;
+}
+
+label.wrapSpy {
+    margin-top: 2em;
+    margin-left: 4px;
+    display: inline;
+    margin-right: 5px;
+}
+#clearLogButton {
+  float: left;
+  border-radius: 50%;
+  width: 2em;
+  background: #dddddd;
+  padding: 4px;
+  height: 2em;
+  color: black;
+  box-shadow: 0px 1px 0px 1px #00000026;
+  cursor: pointer;
+  margin-top: 1em;
+}
+button#clearLogButton:hover {
+  background: #c1bbbb;
+  transition: .3s;
+}
+
+#status {
+  padding: 10px;
+  margin: left;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+#status p{
+  padding: 0px;
+  margin: 2px;
+}
+
+
+.debug { color: #333; }
+.info { color: #000000; }
+.warn { color: #ffc107; }
+.error { color: #dc3545; }
+
+h7#user {
+  font-size: 12px;
+  font-style: italic;
+}
+
+.card-header .col {
+  display: inline-block;
+  width: 48%;
+}
+.col.logs {
+  font-weight: bold;
+  position: relative;
+  top: 12px;
+}
+.card-header .col.close {
+  float: right;
+  width: 2em;
+  position: relative;
+  top: -6px;
+}

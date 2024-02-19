@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eagle Taxis SLC</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.2.6/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1/dist/vue-resource.min.js"></script>
+  <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/vue-socket.io-client@3.0.7/dist/vue-socket.io-client.min.js"></script> -->
+
+
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+
+
+  <template id="eag-webrtc">
+    <div class="modal" :id="'modal_'+_uid" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">WebRTC Phone</h4>
+          </div>
+          <div class="webrtc_phone_ui modal-body">
+
+            <div class="row">
+              <div class="col-xs-12">
+                <small>{{display}}</small><br />
+                <small><i>{{callerId}}</i></small>
+
+              </div>
+              <div class="col-xs-12">
+                <div class="input-group">
+                  <input type="text" :id="'wrtc_dial_screen_'+_uid" class="form-control input-lg" placeholder=""
+                    v-model="screen">
+                  <span class="input-group-btn">
+                    <button @click="backspace()" class="btn btn-default btn-lg" type="button"><i
+                        class="fa fa-chevron-left"></i></button>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="row">
+              <div class="col-xs-12" v-if="wrtc_call_ui">
+                <button class="btn btn-primary btn-block btn-lg" @click="make_call()">
+                  <i class="fa fa-phone"></i> Call
+                </button>
+              </div>
+            </div>
+
+
+
+
+
+            <div class="row">
+              <div class="col-xs-12">
+                <select v-model="driver_to_call" class="form-control">
+                  <option value=""> - Call Driver - </option>
+                  <option v-for="(driver,index) in drivers" :value="driver.phone">Driver {{driver.id}}</option>
+                </select>
+              </div>
+              <div class="col-xs-12" v-if="driver_to_call!=''">
+                <button class="btn btn-primary btn-block btn-lg" @click="make_call_driver()">
+                  <i class="fa fa-phone"></i> Call Driver
+                </button>
+              </div>
+            </div>
+
+
+
+
+            <div class="row">
+              <div class="col-xs-4" v-if="wrtc_end_call_ui">
+                <button class="btn btn-danger btn-block btn-lg" @click="end_call()">
+                  <i class="fa fa-phone"></i>
+                </button>
+              </div>
+
+              <div class="col-xs-4">
+                <button v-if="wrtc_mute_call_ui" class="btn btn-default btn-block btn-lg" @click="mute()">
+                  <i class="fa fa-microphone-slash"></i>
+                </button>
+                <button v-if="wrtc_unmute_call_ui" class="btn btn-default btn-block btn-lg" @click="unmute()">
+                  <i class="fa fa-microphone"></i>
+                </button>
+              </div>
+
+              <div class="col-xs-4" v-if="wrtc_new_service_ui">
+                <button class="btn btn-default btn-block btn-lg" @click="new_service()">
+                  <i class="fa fa-car"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="row" v-if="calls>0 && wrtc_cc_transfer_call_ui">
+              <div class="col-xs-12">
+                <button class="btn btn-warning btn-block" @click="cc_send_call_to_queue()">
+                  <i class="fa fa-retweet"></i> {{calls}} on hold
+                </button>
+              </div>
+            </div>
+
+
+            <div class="row" v-if="calls>0 && wrtc_cc_get_call_from_queue_ui">
+              <div class="col-xs-12">
+                <button class="btn btn-primary btn-block" @click="cc_get_call_from_queue()">
+                  <i class="fa fa-phone"></i> Get Call from Queue
+                </button>
+              </div>
+            </div>
+
+
+
+
+
+            <div class="row">
+              <div class="col-xs-6">
+                <button v-if="wrtc_cc_answer_call_ui" class="btn btn-primary btn-block btn-lg"
+                  @click="cc_call_accepted()" :disabled="wrtc_cc_answer_call_disabled">
+                  <i class="fa fa-phone"></i> Answer
+                </button>
+              </div>
+
+              <div class="col-xs-6">
+                <button v-if="wrtc_cc_reject_call_ui" class="btn btn-danger btn-block btn-lg"
+                  @click="cc_call_rejected()">
+                  <i class="fa fa-ban"></i> Reject
+                </button>
+              </div>
+            </div>
+
+
+            <div class="row" v-if="!autoAnswer">
+              <div class="col-xs-6">
+                <button class="btn btn-primary btn-block btn-lg" @click="answer()" v-if="wrtc_answer_call_ui"><i
+                    class="fa fa-phone"></i> Answer.</button>
+              </div>
+
+              <div class="col-xs-6">
+                <button class="btn btn-danger btn-block btn-lg" @click="reject()" v-if="wrtc_reject_call_ui"><i
+                    class="fa fa-ban"></i> Reject.</button>
+              </div>
+            </div>
+
+
+            <div class="row">
+              <div class="col-xs-4">
+                <button class="btn btn-default btn-block" accesskey="1"
+                  @click="dtmf('1')">1<small>&nbsp;</small></button>
+              </div>
+              <div class="col-xs-4">
+                <button class="btn btn-default btn-block" accesskey="2" @click="dtmf('2')">2<small>a b
+                    c</small></button>
+              </div>
+              <div class="col-xs-4">
+                <button class="btn btn-default btn-block" accesskey="3" @click="dtmf('3')">3<small>d e
+                    f</small></button>
+              </div>
+              <div class="col-xs-4">
+                <button class="btn btn-default btn-block" accesskey="4" @click="dtmf('4')">4<small>g h
+                    i</small></button>
+              </div>
+              <div class="col-xs-4">
+                <button class="btn btn-default btn-block" accesskey="5" @click="dtmf('5')">5<small>j k
+                    l</small></button>
+              </div>
+              <div class="col-xs-4">
+                <button class="btn btn-default btn-block" accesskey="6" @click="dtmf('6')">6<small>m n
+                    o</small></button>
+              </div>
+              <div class="col-xs-4">
+                <button class="btn btn-default btn-block" accesskey="7" @click="dtmf('7')">7<small>p q r
+                    s</small></button>
+              </div>
+              <div class="col-xs-4">
+                <button class="btn btn-default btn-block" accesskey="8" @click="dtmf('8')">8<small>t u
+                    v</small></button>
+              </div>
+              <div class="col-xs-4">
+                <button class="btn btn-default btn-block" accesskey="9" @click="dtmf('9')">9<small>w x y
+                    z</small></button>
+              </div>
+              <div class="col-xs-4">
+                <button class="btn btn-default btn-block" accesskey="*"
+                  @click="dtmf('*')">*<small>&nbsp;</small></button>
+              </div>
+              <div class="col-xs-4">
+                <button class="btn btn-default btn-block" accesskey="0"
+                  @click="dtmf('0')">0<small>&nbsp;</small></button>
+              </div>
+              <div class="col-xs-4">
+                <button class="btn btn-default btn-block" accesskey="#"
+                  @click="dtmf('#')">#<small>&nbsp;</small></button>
+              </div>
+            </div>
+            <button class="btn btn-default btn-block" @click="transfer_call('7000')">Transfer to 7000</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+</head>
+
+<body>
+  <div id="app">
+    <eag-webrtc></eag-webrtc>
+  </div>
+  <script src="https://jssip.net/download/releases/jssip-3.10.0.min.js"></script>
+  <script>
+    Vue.component('eag-webrtc', {
+      template: '#eag-webrtc',
+      props: ['sipUsername', 'sipPassword', 'extension', 'calls', 'drivers'],
+      watch: {
+        screen: function ($screen) {
+          this.ui_update();
+
+        },
+        calls($calls) {
+          console.log("watch calls:", $calls);
+          if ($calls > 0) {
+            if (this.autoAnswer) {
+              //this.cc_get_call_from_queue();
+            } else {
+              this.cc_call_offered();
+            }
+          } else {
+            this.cc_stop_ringing();
+            if (this.endpoint_status == "ready") {
+              this.hide();
+            }
+          }
+        }
+      },
+      data: function () {
+        return {
+          configuration: null,
+          phone: null,
+          session: null,
+          callOptions: null,
+          remoteAudio: null,
+          "plivoWebSdk": {},
+          "display": "",
+          "callerId": "",
+          "status": "",
+          "screen": "",
+          "audio": {},
+          "autoAnswer": false,
+          "transfering": false,
+          "endpoint_status": "off", // inuse, ready
+          "CallUUID": "",
+          "ccMode": true, //Call Center Modo
+          "isRinging": false,
+
+          "driver_to_call": "",
+
+          "wrtc_cc_transfer_call_ui": false,
+          "wrtc_cc_get_call_from_queue_ui": false,
+          "wrtc_cc_answer_call_disabled": false,
+          "wrtc_cc_answer_call_ui": true,
+          "wrtc_cc_reject_call_ui": true,
+          "wrtc_answer_call_ui": true,
+          "wrtc_reject_call_ui": true,
+          "wrtc_new_service_ui": false,
+          "wrtc_mute_call_ui": true,
+          "wrtc_unmute_call_ui": false,
+          "wrtc_call_ui": true,
+          "wrtc_end_call_ui": false
+        };
+      },
+      mounted() {
+        this.show()
+      },
+      methods: {
+        cc_call_offered() {
+          console.log("cc_call_offered");
+          if (this.ccMode === true && this.endpoint_status == "ready") {
+            console.log("pass validation");
+            this.show();
+            this.ui_call_offered();
+            this.cc_start_ringing();
+          }
+        },
+        cc_call_accepted() {
+          this.session.answer();
+          this.addStreams();
+          if (this.ccMode) {
+            console.log("cc_call_accepted");
+            this.cc_stop_ringing();
+            this.ui_stand_by();
+            this.autoAnswer = true;
+            this.cc_get_call_from_queue();
+          }
+        },
+        cc_call_rejected() {
+          if (this.ccMode) {
+            //reject incomming call
+            this.session.terminate();
+            this.cc_stop_ringing();
+            this.ui_stand_by();
+            this.autoAnswer = false;
+            this.hide();
+
+
+          }
+        },
+        cc_send_call_to_queue() {
+          if (this.ccMode) {
+            this.transfering = true;
+            this.autoAnswer = true;
+            var token = localStorage.getItem('eataxi_dispatcher_token');
+            var _this = this;
+            $.ajax({
+              url: "/dispatchers/api/call-center/transfer-call-to-queue",
+              type: 'post',
+              headers: { "x-access-token": token },
+              data: JSON.stringify({ "CallUUID": this.CallUUID }),
+              contentType: 'application/json',
+              error: function (err) {
+
+              },
+              success: function (data) {
+                //this.get_call_from_queue();
+              },
+            });
+          }
+        },
+        cc_get_call_from_queue() {
+          if (this.ccMode) {
+            this.autoAnswer = true;
+            console.log("cc_get_call_from_queue");
+            var token = localStorage.getItem('eataxi_dispatcher_token');
+            this.wrtc_cc_answer_call_disabled = true;
+            var _this = this;
+            $.ajax({
+              url: "/dispatchers/api/call-center/transfer-from-queue-to-ext",
+              type: 'post',
+              headers: { "x-access-token": token },
+              data: JSON.stringify({ "extension": this.extension }),
+              contentType: 'application/json',
+              error: function (err) {
+                _this.autoAnswer = false;
+                _this.wrtc_cc_answer_call_disabled = false;
+                _this.ui_stand_by();
+                console.log("==> error" + err);
+                console.log(err);
+              },
+              success: function (data) {
+                if (data.success) {
+                  _this.wrtc_cc_answer_call_disabled = false;
+                  console.log("==> success");
+                  _this.CallUUID = data.CallUUID
+                  _this.callerId = "CallerID: " + data.callerId;
+                  console.log(data);
+                } else {
+                  _this.autoAnswer = false;
+                  _this.wrtc_cc_answer_call_disabled = false;
+                  _this.ui_stand_by();
+                  console.log("==> error success");
+                }
+              },
+            });
+          }
+        },
+        cc_set_call_to_answered() {
+          if (this.ccMode) {
+            var token = localStorage.getItem('eataxi_dispatcher_token');
+            var _this = this;
+            $.ajax({
+              url: "/dispatchers/api/call-center/update-call-to-answered",
+              type: 'post',
+              headers: { "x-access-token": token },
+              data: JSON.stringify({ "CallUUID": this.CallUUID, "extension": this.extension }),
+              contentType: 'application/json',
+              error: function (err) {
+
+              },
+              success: function (data) {
+
+              },
+            });
+          }
+        },
+        cc_start_ringing() {
+          if (!this.isRinging) {
+            this.audio = new Audio("/dispatchers/audio/incoming-call.mp3");
+            this.audio.loop = true;
+            this.audio.play();
+            this.isRinging = true;
+          }
+        },
+        cc_stop_ringing() {
+          this.audio.loop = false;
+          this.audio.pause();
+          this.isRinging = false;
+          this.autoAnswer = false;
+        },
+        transfer_call(dest) {
+          this.session.refer("sip:" + dest + "@asterisk.ccpml.com");
+        },
+        show: function () {
+          $("#modal_" + this._uid).modal("show");
+          console.log("show");
+
+          //esta linea no va aqui
+          this.start_phone();
+          //fin esta linea no va aqui
+        },
+        hide: function () {
+          $("#modal_" + this._uid).modal("hide");
+        },
+        new_service: function () {
+          $("#modal_" + this._uid).modal("hide");
+          $number = this.incomingCall.substring(this.incomingCall.length - 10);
+          this.$emit('addservice', $number);
+        },
+        webrtcNotSupportedAlert: function () {
+          alert("Your browser doesn't support WebRTC. You need Chrome 25");
+        },
+        //eventes calls from plivo lib
+        onMediaPermission: function (result) {
+          console.log("onMediaPermission");
+          if (result) {
+            console.log("get media permission");
+          } else {
+            alert("you don't allow media permission, you will can't make a call until you allow it");
+          }
+        },
+        onConnecting: function (e) {
+          console.log("socket is connecting", e);
+        },
+        onConnected: function (e) {
+          console.log("socket is connected", e);
+        },
+        onDisconnected: function (e) {
+          console.log("socket is disconnected", e);
+        },
+        onRegistered: function (e) {
+          console.log("device is registered now", e);
+          this.endpoint_status = "ready";
+          if (!this.session) {
+            this.display = "Logged in";
+          }
+          
+          if (this.calls > 0) {
+            this.cc_call_offered();
+          }
+        },
+        onUnregistered: function (e) {
+          console.log("onLogout");
+        },
+        onRegistrationFailed: function (e) {
+          console.log("onLoginFailed", e.cause);
+          this.display = "Login Failed" + e.cause;
+        },
+        onCalling: function () {
+          console.log("onCalling");
+          this.display = "Connecting....";
+        },
+        onCallRemoteRinging: function () {
+          console.log("onCallRemoteRinging");
+          this.display = "Connecting....";
+        },
+        onCallAnswered: function () {
+          this.display = "Call Answered: " + this.incomingCall;
+          this.ui_call_answered();
+          this.$emit('callanswered');
+          this.endpoint_status = "inuse";
+          if (this.ccMode) {
+            this.cc_set_call_to_answered();
+            this.transfering = false;
+            this.autoAnswer = false;
+          }
+
+        },
+        onCallTerminated: function () {
+          console.log("onCallTerminated");
+          this.display = "";
+          this.callerId = "";
+          this.ui_stand_by();
+          this.ui_update();
+          this.$emit('callterminated');
+          this.endpoint_status = "ready";
+          if (this.transfering) {
+            this.autoAnswer = true;
+          } else {
+            if (this.calls > 0) {
+              this.cc_call_offered();
+            }
+          }
+        },
+        onCallFailed: function (cause) {
+          this.display = "Call Failed: " + cause;
+          this.callerId = "";
+          this.ui_stand_by();
+          this.endpoint_status = "ready";
+          this.autoAnswer = false;
+          this.transfering = false;
+          if (this.calls > 0) {
+            this.cc_call_offered();
+          }
+
+        },
+        onNewRTCSession: function (e) {
+          console.log("new session establishing ...", e);
+          this.display = "new session establishing";
+
+          if (this.session && this.session.isEstablished()) {
+            this.session.terminate();
+          }    
+          this.session = e.session;;
+
+          if (this.autoAnswer) {
+            this.session.answer();
+
+          }
+          //ESTA LINEA VA EN EL WATCH
+          this.cc_call_offered();
+          //FIN
+
+
+          // if (e.originator === "local") {
+
+          //   console.trace(e.request + " incoming session answering a call");
+          //   this.display = "outgoing session";
+
+          // } else {
+          //   console.trace(e.request + " incoming session answering a call");
+          //   this.display = "incoming session answering a call";
+
+          // }
+
+          if (this.session.direction === "incoming") {
+            // Captura el Caller ID
+            this.incomingCall = this.session.remote_identity.uri.user;
+            this.display="Incoming Call:" + this.incomingCall;
+            this.session.on('accepted', (data) => {
+              this.onCallAnswered()
+            });
+
+            this.session.on('ended', (data) => {
+              this.onCallTerminated()
+            });
+
+          }
+          // session handlers/callbacks
+          const completeSession = function () {
+            this.session = null;
+          };
+
+          this.session.on("peerconnection", (e) => {
+            console.log("peerconnection", e);
+
+          });
+          this.session.on("connecting", (e) => {
+            console.log("connecting", e);
+
+          });
+          this.session.on("process", (e) => {
+            console.log("process", e);
+
+          });
+          this.session.on("ended", (e) => {
+            console.log("call ended", e);
+
+            // need a way to show on UI
+            completeSession();
+          });
+          this.session.on("failed", (e) => {
+            console.log("session failed", e);
+            //completeSession();
+          });
+          this.session.on("accepted", (e) => {
+            // when 2xx received
+            console.log("session accepted by", e.originator);
+
+            //---------------UPDATE UI()---------------------------------
+          });
+          this.session.on("confirmed", function (e) {
+            //when ACK received or sent
+            console.log("confirmed by", e.originator);
+            //---------------UPDATE UI()---------------------------------
+          });
+
+          if (this.session.direction === "incoming") {
+            console.log("incoming session direction");
+            this.cc_start_ringing()
+          }
+
+
+        },
+        onIncomingCallCanceled: function () {
+          console.log("onIncomingCallCanceled:");
+          this.display = "Incoming Call Canceled";
+          this.callerId = "";
+          this.endpoint_status = "ready";
+          this.ui_stand_by();
+          this.autoAnswer = false;
+          this.transfering = false;
+          if (this.calls > 0) {
+            this.cc_call_offered();
+          }
+        },
+        getCallerId: function (driver_id, status_id) {
+          var token = localStorage.getItem('eataxi_dispatcher_token');
+          var _this = this;
+          $.ajax({
+            url: "/dispatchers/api/callerId",
+            type: 'post',
+            headers: { "x-access-token": token },
+            data: JSON.stringify({ "phoneNumber": this.incomingCall }),
+            contentType: 'application/json',
+            error: function (err) {
+              _this.callerId = "CallerID: NA";
+            },
+            success: function (data) {
+              if (data.name) {
+                _this.callerId = "CallerID: " + data.name;
+              } else {
+                _this.callerId = "CallerID: NA";
+              }
+            },
+          });
+        },
+        hangup: function () {
+          this.display = "Hanging up";
+          this.session.terminate();
+
+
+        },
+        answer: function () {
+          console.log("answer");
+          this.display = "Answering....";
+          this.plivoWebSdk.client.answer();
+        },
+        reject: function () {
+          console.log("reject");
+          this.session.terminate();
+        },
+        mute: function () {
+          console.log("mute");
+
+          this.session.mute();
+          this.wrtc_mute_call_ui = false;
+          this.wrtc_unmute_call_ui = true;
+          this.$emit('mute');
+        },
+        unmute: function () {
+          console.log("unmute");
+
+
+          this.session.unmute();
+          
+          this.wrtc_mute_call_ui = true;
+          this.wrtc_unmute_call_ui = false;
+
+          this.$emit('unmute');
+        },
+        backspace: function () {
+          console.log("backspace");
+          if (this.screen.length > 0) {
+            this.screen = this.screen.slice(0, -1);
+            this.ui_update();
+          }
+        },
+        addStreams() {
+          console.log("addStreams");
+          // Añadir un evento addstream a la conexión de la sesión
+          this.session.connection.addEventListener("addstream", (streamEvent) => {
+            console.log("addstreams", streamEvent);
+            this.cc_stop_ringing()
+
+            // Attach remote stream to remoteAudio
+            this.remoteAudio.srcObject = streamEvent.stream;
+
+            // Attach local stream to localView
+            const peerconnection = this.session.connection;
+            console.log(
+              "addstream peerconnection local and remote stream counts ",
+              peerconnection.getLocalStreams.length,
+              peerconnection.getRemoteStreams.length
+            );
+          });
+
+        },
+        start_phone: function () {
+
+          //esta linea no va aqui
+          this.sipUsername = "1006";
+          this.sipPassword = "1006";
+          //FIN esta linea no va aqui
+
+          if (this.sipUsername || this.sipPassword) {
+            console.log(this.extension)
+            console.log("start_phone");
+            //console.log(this.sipUsername + "" + this.sipPassword );
+
+            const sipUsername = "1003";
+            const sipPassword = "1003";
+
+            JsSIP.debug.enable('*');
+
+            // Initialize WebSocket
+            const socket = new JsSIP.WebSocketInterface(
+              "wss://asterisk.ccpml.com:8089/ws"
+            );
+
+            this.configuration = {
+              sockets: [socket],
+              uri: `sip:${sipUsername}@asterisk.ccpml.com`,
+              password: sipPassword,
+            };
+
+            this.remoteAudio = new window.Audio();
+            this.remoteAudio.autoplay = true;
+
+            // Crear instancia de JsSIP.UA
+            this.phone = new JsSIP.UA(this.configuration);
+
+            this.callOptions = {
+              mediaConstraints: {
+                audio: true,
+                video: true,
+              },
+              rtcOfferConstraints: {
+                offerToReceiveAudio: true,
+                offerToReceiveVideo: true,
+              },
+              pcConfig: {
+                iceServers: [{ urls: ["stun:stun.l.google.com:19302"] }],
+                iceTransportPolicy: "all",
+              },
+            };
+
+            //sockets
+            this.phone.on("connecting", this.onConnecting);
+
+            this.phone.on("connected", this.onConnected);
+            this.phone.on("disconnected", this.onDisconnected);
+
+            //SIP user
+            this.phone.on("unregistered", this.onUnregistered);
+            this.phone.on("registered", this.onRegistered);
+
+            this.phone.on("registrationFailed", this.onRegistrationFailed);
+
+            this.phone.on("newRTCSession", this.onNewRTCSession);
+
+            this.phone.start();
+
+
+            // this.plivoWebSdk.client.on('onWebrtcNotSupported', this.webrtcNotSupportedAlert);
+            // this.plivoWebSdk.client.on('onLogin', this.onLogin);
+            // this.plivoWebSdk.client.on('onLogout', this.onLogout);
+            // this.plivoWebSdk.client.on('onLoginFailed', this.onLoginFailed);
+            // this.plivoWebSdk.client.on('onCallRemoteRinging', this.onCallRemoteRinging);
+            // this.plivoWebSdk.client.on('onIncomingCallCanceled', this.onIncomingCallCanceled);
+            // this.plivoWebSdk.client.on('onCallFailed', this.onCallFailed);
+            // this.plivoWebSdk.client.on('onCallAnswered', this.onCallAnswered);
+            // this.plivoWebSdk.client.on('onCallTerminated', this.onCallTerminated);
+            // this.plivoWebSdk.client.on('onCalling', this.onCalling);
+            // this.plivoWebSdk.client.on('onIncomingCall', this.onIncomingCall);
+            // this.plivoWebSdk.client.on('onMediaPermission', this.onMediaPermission);
+            // this.plivoWebSdk.client.login(this.sipUsername, this.sipPassword);
+            this.ui_stand_by();
+          }
+        },
+        make_call: function () {
+          console.log("make_call");
+          this.display = "Calling....";
+          val = this.formatUSNumber(this.screen);
+
+          this.phone.call(val, this.callOptions);
+          this.addStreams();
+        },
+        make_call_driver: function () {
+          console.log("make_call driver");
+          this.display = "Calling Driver....";
+          this.plivoWebSdk.client.call("1" + this.driver_to_call);
+          this.driver_to_call = "";
+        },
+        end_call: function () {
+          console.log("end_call");
+          this.display = "Ending Call....";
+          this.session.terminate();
+        },
+        dtmf: function (digit) {
+          console.log("dtmf");
+          this.screen += digit;
+          //this.plivoWebSdk.client.sendDtmf(digit);
+          if (digit == "#") { digit = "pound"; }
+          if (digit == "*") { digit = "star"; }
+          this.audio = new Audio("/dispatchers/audio/dtmf-" + digit + ".mp3");
+          this.audio.play();
+          this.ui_update();
+        },
+        formatUSNumber: function (n) {
+          console.log("formatUSNumber");
+          var dest = n.replace(/-/g, '');
+          dest = dest.replace(/ /g, '');
+          dest = dest.replace(/\+/g, '');
+          dest = dest.replace(/\(/g, '');
+          dest = dest.replace(/\)/g, '');
+          if (!isNaN(dest)) {
+            n = dest
+            if (n.length == 10 && n.substr(0, 1) != "1") {
+              n = "1" + n;
+            }
+          }
+          return n;
+        },
+        mic_volume: function () {
+          console.log("mic_volume");
+        },
+        speakers_volume: function () {
+          console.log("speakers_volume");
+        },
+        send_sms: function () {
+          console.log("send_sms");
+        },
+        update_status: function () {
+          console.log("update_status");
+        },
+        /*ASTERISK*/
+        //ui 
+        ui_stand_by: function () {
+          console.log("ui_stand_by");
+          this.wrtc_call_ui = false;
+          this.wrtc_end_call_ui = false;
+          this.wrtc_mute_call_ui = false;
+          this.wrtc_unmute_call_ui = false;
+          this.wrtc_new_service_ui = false;
+          this.wrtc_answer_call_ui = false;
+          this.wrtc_reject_call_ui = false;
+          this.wrtc_cc_answer_call_ui = false;
+          this.wrtc_cc_reject_call_ui = false;
+          this.wrtc_cc_transfer_call_ui = false;
+          this.wrtc_cc_get_call_from_queue_ui = true;
+          this.status = "StandBy";
+          this.callerId = "";
+        },
+        ui_ready_to_call: function () {
+          console.log("ui_ready_to_call");
+          this.wrtc_call_ui = true;
+          this.wrtc_end_call_ui = false;
+          this.wrtc_mute_call_ui = false;
+          this.wrtc_unmute_call_ui = false;
+          this.wrtc_new_service_ui = false;
+          this.wrtc_answer_call_ui = false;
+          this.wrtc_reject_call_ui = false;
+          this.wrtc_cc_answer_call_ui = false;
+          this.wrtc_cc_reject_call_ui = false;
+          this.wrtc_cc_transfer_call_ui = false;
+          this.wrtc_cc_get_call_from_queue_ui = false;
+          this.status = "ReadyToCall";
+        },
+        ui_call_offered() {
+          console.log("ui_call_offered");
+          this.wrtc_call_ui = false;
+          this.wrtc_end_call_ui = false;
+          this.wrtc_mute_call_ui = false;
+          this.wrtc_unmute_call_ui = false;
+          this.wrtc_new_service_ui = false;
+          this.wrtc_answer_call_ui = false;
+          this.wrtc_reject_call_ui = false;
+          this.wrtc_cc_answer_call_ui = true;
+          this.wrtc_cc_reject_call_ui = true;
+          this.wrtc_cc_transfer_call_ui = false;
+          this.wrtc_cc_get_call_from_queue_ui = false;
+          this.status = "IncomingCall";
+        },
+        ui_incoming_call: function () {
+          console.log("ui_incoming_call");
+          this.wrtc_call_ui = false;
+          this.wrtc_end_call_ui = false;
+          this.wrtc_mute_call_ui = false;
+          this.wrtc_unmute_call_ui = false;
+          this.wrtc_new_service_ui = false;
+          this.wrtc_answer_call_ui = true;
+          this.wrtc_reject_call_ui = true;
+          this.wrtc_cc_answer_call_ui = false;
+          this.wrtc_cc_reject_call_ui = false;
+          this.wrtc_cc_transfer_call_ui = false;
+          this.wrtc_cc_get_call_from_queue_ui = false;
+          this.status = "IncomingCall";
+        },
+        ui_call_answered: function () {
+          console.log("ui_call_answered");
+          this.wrtc_call_ui = false;
+          this.wrtc_end_call_ui = true;
+          this.wrtc_mute_call_ui = true;
+          this.wrtc_unmute_call_ui = false;
+          this.wrtc_new_service_ui = true;
+          this.wrtc_answer_call_ui = false;
+          this.wrtc_reject_call_ui = false;
+          this.wrtc_cc_answer_call_ui = false;
+          this.wrtc_cc_reject_call_ui = false;
+          this.wrtc_cc_transfer_call_ui = true;
+          this.wrtc_cc_get_call_from_queue_ui = false;
+          this.status = "CallAnswered";
+        },
+        ui_update: function () {
+          console.log("ui_update");
+          if (this.status == "StandBy") {
+            if (this.screen != "") {
+              this.ui_ready_to_call();
+            }
+          }
+          if (this.status == "ReadyToCall") {
+            if (this.screen == "") {
+              this.ui_stand_by();
+            }
+          }
+        },
+        webrtcNotSupportedAlert: function () {
+          alert("Your browser doesn't support WebRTC. You need Chrome 25");
+        }
+      }
+    });
+    new Vue({
+      el: '#app'
+    });
+  </script>
+</body>
+
+</html>
