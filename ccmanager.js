@@ -1,4 +1,4 @@
-const socket = io("https://asterisk.ccpml.com:8090");
+//const socket = io("https://luis.bestvoiper.com:8090");
 
 let logContainer,clearLogButton,userLabel,loginButton,phone,session;
 const storedServer = localStorage.getItem("server");
@@ -26,7 +26,7 @@ let callOptions = {
 };
 
 
-socket.on("dispatcherQueueInfoUpdated", (updatedQueueInfo) => {
+/* socket.on("dispatcherQueueInfoUpdated", (updatedQueueInfo) => {
   console.log("Cola actualizada:", updatedQueueInfo);
   let queueCount = document.getElementById('queueCount');
   queueCount.innerHTML = updatedQueueInfo.count
@@ -47,9 +47,9 @@ socket.on("dispatcherQueueInfoUpdated", (updatedQueueInfo) => {
     
       
   }
-  
+   
 });
-
+*/
 
 
 let incomingCallAudio = new window.Audio("ringtone.mp3");
@@ -102,7 +102,7 @@ function login(server, sipUsername, sipPassword){
   JsSIP.debug.enable("JsSIP:*");
   userLabel.innerText = "sip:" + sipUsername + "@"+server
   // Initialize WebSocket
-  const socket = new JsSIP.WebSocketInterface("wss://"+server+":8089/ws");
+  const socket = new JsSIP.WebSocketInterface("wss://luis.bestvoiper.com:8089/ws");
   // Configuration with SIP credentials
   configuration = {
     sockets: [socket],
@@ -243,7 +243,7 @@ function addStreams() {
 
 async function loadQueueInfo() {
     try {
-      const response = await fetch('https://asterisk.ccpml.com:8090/queue');
+      const response = await fetch('https://luis.bestvoiper.com:8090/queue');
       const data = await response.json();
       console.log("DATA =============>", data)
       // Llama a la función para construir la tabla
@@ -365,7 +365,7 @@ async function loadQueueInfo() {
     const storedUsername = localStorage.getItem("sipUsername");  
     console.log("username===>",storedUsername)
     const encodedChannelId = encodeURIComponent(channelId);
-    fetch(`https://asterisk.ccpml.com:8090/dequeue/${encodedChannelId}/${storedUsername}`, {
+    fetch(`https://luis.bestvoiper.com:8090/dequeue/${encodedChannelId}/${storedUsername}`, {
       method: "POST",
     })
     .then(response => response.json())
