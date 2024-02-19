@@ -521,22 +521,8 @@ document.addEventListener("DOMContentLoaded",()=>{
     const connectCall = document.getElementById("connectCall");
 
 
-    if(cbListen.checked && cbTalk.checked){
-        phone.call("00" + dest, callOptions);
-    }
-    else if (cbListen.checked || cbTalk.checked) {
-        if (cbListen.checked) {
-            phone.call("0" + dest, callOptions);
-            console.log("Listening Call");
-        } else if (cbTalk.checked) {
-            phone.call("00" + dest, callOptions);
-            console.log("Whisper Call");
-        }
-    }
-    else {
-        phone.call(dest, callOptions); 
-        console.log("Calling");
-    }
+    phone.call(dest, callOptions); 
+    console.log("Calling");
     
     
     document.getElementById("toField").value = ""
