@@ -53,14 +53,13 @@ function setLogingFromValues(){
 function showLogin(){
   document.getElementById("wrapLogin").style.display = "block";
   document.getElementById("wrapper").style.display = "none";
-  document.getElementById("logoutButton").style.display = "none";
   setLogingFromValues();
 }
 
 function hideLogin() {
   document.getElementById("wrapLogin").style.display = "none";
   document.getElementById("wrapper").style.display = "block";
-  document.getElementById("logoutButton").style.display = "block";
+  //document.getElementById("logoutButton").style.display = "block";
 }
 
 
@@ -503,8 +502,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     
     
     document.getElementById("toField").value = ""
-    cbListen.checked = false;
-    cbTalk.checked = false;
+
     updateUI();
     addStreams();
   });
