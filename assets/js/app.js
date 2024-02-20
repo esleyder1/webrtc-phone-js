@@ -26,33 +26,7 @@ let callOptions = {
 };
 
 
-/* socket.on("dispatcherQueueInfoUpdated", (updatedQueueInfo) => {
-  console.log("Cola actualizada:", updatedQueueInfo);
-  let queueCount = document.getElementById('queueCount');
-  queueCount.innerHTML = updatedQueueInfo.count
-  if(updatedQueueInfo.count > 0){
-      buildQueueTable(updatedQueueInfo);
-  }else{
-    //ocultar la sección de la tabla queue
-    let containerTableQueue = document.getElementById('containerTableQueue');
-    //containerTableQueue.style.display = "none"
-    const queueTable = document.getElementById('queueTable')
-    if(queueTable){
-        while (queueTable.rows.length > 0) {
-            queueTable.deleteRow(0);
-        }
-        queueTable.style.display = "none"
-    }
-
-    
-      
-  }
-   
-});
-*/
-
-
-let incomingCallAudio = new window.Audio("ringtone.mp3");
+let incomingCallAudio = new window.Audio("assets/sounds/ringtone.mp3");
 incomingCallAudio.loop = true;
 let remoteAudio = new window.Audio();
 remoteAudio.autoplay = true;
@@ -489,18 +463,21 @@ document.addEventListener("DOMContentLoaded",()=>{
     }
   });
 
-  logoutButton.addEventListener("click",logout);
+  //logoutButton.addEventListener("click",logout);
   
   document.getElementById("toCallButtons").addEventListener("click", (e) => {
     if (e.target.classList.contains("dialpad-char")) {
-      const value = e.target.getAttribute("data-value");
-      console.log(value)
+      let digit = e.target.getAttribute("data-value");
+      if (digit == "#") { digit = "pound"; }
+      if (digit == "*") { digit = "star"; }
+      let audio = new Audio("assets/sounds/dtmf/dtmf-" + digit + ".mp3");
+      audio.play();
       document.getElementById("wrapOptions").style.display = "block";
       
-      document.getElementById("toField").value += value      
+      document.getElementById("toField").value += digit      
       console.log("session =====================>", session);
       //session.sendDTMF(value.toString());
-      add_to_status(value.toString(), "", "info");
+      add_to_status(digit.toString(), "", "info");
     }
   });
 

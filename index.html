@@ -4,9 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="icon" type="image/ico" href="assets/images/favicon.ico">
     <link href="assets/css/libs/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/libs/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/libs/font-awesome-6.min.css">
     <link rel="stylesheet" href="assets/css/style.css" type="text/css">
+    <title>WebRTC - Phone</title>
 </head>
 
 <body>
@@ -114,13 +116,13 @@
                         <div id="mute">
                             <i id="muteIcon" class="fa fa-microphone"></i>
                         </div>
-                        <!--<div id="hold">
+                        <div id="hold">
                         <button id="btnHoldUnhold">Call on hold</button>
                     </div>
                     <br />
                     <div id="hold">
                         <button id="btnTransferCall" class="btnTransfer">Transfer call</button>
-                    </div>-->
+                    </div>
                     </div>
 
                     <div id="callControl">
@@ -134,9 +136,6 @@
 
                                         <div class="settings">
                                             <div class="dropdown">
-                                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                  Dropdown button
-                                                </button>
                                                 <ul class="dropdown-menu">
                                                   <li><a class="dropdown-item" href="#">Action</a></li>
                                                   <li><a class="dropdown-item" href="#">Another action</a></li>
@@ -184,15 +183,6 @@
                                     </div>
                                 </div>
                                 <div id="wrapOptions" style="display: none">
-
-
-
-
-                                    <label class="wrapSpy">
-                                        <input type="checkbox" name="spyCheckbox" id="spyCheckboxTalk">
-                                        Talk
-                                    </label>
-
                                     <div id="connectCall" class="call-button">
                                         <span><i class="fa fa-phone-square"></i> Call</span>
                                     </div>
@@ -207,6 +197,7 @@
         </div>
 
     </div>
+    <script src="assets/js/libs/popper.min.js"></script>
     <script src="assets/js/libs/bootstrap.min.js"></script>
     <script src="assets/js/libs/loglevel.min.js"></script>
     <script src="assets/js/libs/jssip-3.10.0.min.js"></script>
