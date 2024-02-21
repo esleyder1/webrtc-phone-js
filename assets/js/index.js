@@ -1,15 +1,15 @@
 jQuery(function () {
     let loginButton = $('#loginButton');
-    let logoutButton = $('#logoutButton');
     let userLabel = $('#user');
-
-    let audioFiles = {};
-    let session;
-    let dontDisturb = false
 
     let storedServer = localStorage.getItem("server");
     let storedUsername = localStorage.getItem("sipUsername");
     let storedPassword = localStorage.getItem("sipPassword");
+
+    let audioFiles = {};
+    let session;
+    let isDND = false;
+    let isAA = false;
 
     let callTaked = false;
     let userId = null;
@@ -186,17 +186,21 @@ jQuery(function () {
                 });
     
                 if (session.direction === "incoming") {
-
-                    session.terminate({
-                        status_code: 486,
-                        reason_phrase: 'Rechazada'
-                      });
-                    //console.log("incoming session direction");
-                    //console.log("Incoming session direction", "", "info");
-                    //incomingCallAudio.play();
+                    //si isDND es true, no entran llamada, estária en modo no molestar
+                    if(isDND){
+                        session.terminate({
+                            status_code: 486,
+                            reason_phrase: 'DND'
+                          });
+                    }else{
+                        if(isAA){
+                            session.answer()
+                        }else{
+                            console.log("incoming session direction");
+                            incomingCallAudio.play();
+                        }
+                    }
                 }
-
- 
                 updateUI();
             });
             phone.start();
@@ -235,7 +239,7 @@ jQuery(function () {
                         addStreams();
                         deleteRowByUserId(userId);
                     } else {
-                        $("#callInfoText").html("Ringing...");
+                        $("#callInfoText").html("Timbrando...");
                         $("#callInfoNumber").html(session.remote_identity.uri.user);
                         $("#callStatus").show();
                     }
@@ -243,7 +247,7 @@ jQuery(function () {
                     console.log("session is established.");
                     $("#callStatus").show();
                     $("#incomingCall").hide();
-                    $("#callInfoText").html("In Call");
+                    $("#callInfoText").html("En llamada");
                     $("#callInfoNumber").html(session.remote_identity.uri.user);
                     $("#inCallButtons").show();
                     incomingCallAudio.pause();
@@ -308,7 +312,10 @@ jQuery(function () {
         }
     });
 
-    //logoutButton.on("click", logout);
+    $('#btnLogout').click(function(event) {
+        event.preventDefault();
+        logout()
+    })
 
     $("#toCallButtons").on("click", ".dialpad-char", function(e) {
         if ($(this).hasClass("dialpad-char")) {
@@ -434,10 +441,24 @@ jQuery(function () {
 
     $('#btnDND').click(function(event) {
         event.preventDefault();
-        console.log("DND")
-        toggleDND()
+        if(isDND){
+            isDND = false
+            $(this).find("span").text("No Molestar")
+        }else{
+            isDND = true
+            $(this).find("span").text("No Molestar | Activado")
+        }
     });
 
-
+    $('#btnAA').click(function(event) {
+        event.preventDefault();
+        if(isAA){
+            isAA = false
+            $(this).find("span").text("Respuesta Automática")
+        }else{
+            isAA = true
+            $(this).find("span").text("Respuesta Automática | Activado")
+        }
+    });
 
 })    

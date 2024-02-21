@@ -54,17 +54,6 @@ select {
   font-size: 16px;
 }
 
-button:hover {
-  background-color: #555;
-}
-
-.btnTransfer {
-    background-color: #109080;
-}
-
-btnTransfer:hover {
-  background-color: #109090;
-}
 /* Estilo para el mensaje de estado */
 #statusMessage {
   text-align: center;
@@ -113,9 +102,7 @@ span.input-group-btn {
     width: 84%;
     margin: auto;
 }
-button#btnDeleteDial:active {
-    border: 1px solid white;
-}
+
 /* Estilos para el bot車n de llamada */
 .call-button {
   background-color: #0074cc;
@@ -281,10 +268,6 @@ div#connectCall span {
   border: none;
 }
 
-.fa {
-  margin-top: 11px;
-}
-
 #answer .fa {
   -webkit-animation: callp 1s;
   animation: callp 1s;
@@ -360,11 +343,6 @@ div#connectCall span {
   background: #e6e4e7;
   padding: 8px;
   height: 47px;
-}
-
-span#revealPassword i {
-  position: relative;
-  top: -5px;
 }
 
 .wrapTitleLogout .wrapTitle, .wrapTitleLogout .logoutButton {

@@ -58,14 +58,14 @@
                 <form id="loginForm" class="column">
 
                     <div class="group-form">
-                        <label for="server">Server domain:</label>
+                        <label for="server">Dominio:</label>
                         <input type="text" id="server" name="server" required>
-                        <label for="sipUsername">SIP Username:</label>
+                        <label for="sipUsername">Usuario:</label>
                         <input type="text" id="sipUsername" name="sipUsername" required>
                     </div>
-                    <br>
+              
                     <div class="group-form">
-                        <label for="sipPassword">SIP Password:</label>
+                        <label for="sipPassword">Contraseña:</label>
                         <div class="password-input-container input-group">
                             <input type="password" id="sipPassword" name="sipPassword" class="form-control" required>
                             <div class="input-group-append">
@@ -75,9 +75,10 @@
                             </div>
                         </div>
                     </div>
-
-                    <br>
-                    <button type="button" id="loginButton">Log In</button>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" id="loginButton">Iniciar sesión</button>
+                    </div>
+                    
                 </form>
             </div>
             <div id="wrapper" class="col-md-4 col-sm-12 justify-content-evenly">
@@ -85,7 +86,7 @@
                     <div id="incomingCall" style="display: none">
                         <div id="statusMessage"></div>
                         <div class="callInfo">
-                            <h3>Incoming Call</h3>
+                            <h3>LLamada entrante</h3>
                             <p id="incomingCallNumber">Unknown</p>
                         </div>
                         <div id="answer"> <i class="fa fa-phone-square"></i></div>
@@ -117,12 +118,12 @@
                             <i id="muteIcon" class="fa fa-microphone"></i>
                         </div>
                         <div id="hold">
-                        <button id="btnHoldUnhold">Call on hold</button>
-                    </div>
-                    <br />
-                    <div id="hold">
-                        <button id="btnTransferCall" class="btnTransfer">Transfer call</button>
-                    </div>
+                            <button id="btnHoldUnhold" class="btn btn-success">Llamada en espera</button>
+                        </div>
+                        <br />
+                        <div id="hold">
+                            <button id="btnTransferCall" class="btnTransfer btn btn-info">Transferir llamada</button>
+                        </div>
                     </div>
 
                     <div id="callControl">
@@ -132,16 +133,23 @@
                             <div class="card-header headerPhone">
                                 <div class="wrapTitleLogout">
                                     <div class="wrapTitle">
-                                        <p id="title">Best Voiper</p>
+                                        <p id="title">Bestvoiper</p>
 
                                         <div class="settings">
                                             <button class="btn-round btn-settings btn btn-light"
                                                 data-bs-toggle="dropdown"><i class="fa fa-cogs"></i></button>
                                             <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item" href="#"><i class="fas fa-reply"></i> Respuesta automática</a></li>
-                                                <li><a class="dropdown-item" id="btnDND"><i class="fas fa-ban"></i> No molestar</a></li>
-                                                <li><a class="dropdown-item" href="#"><i class="fas fa-phone"></i> Llamada en espera</a></li>
-                                                <li><a class="dropdown-item" href="#"><i class="fas fa-microphone"></i> Grabar todas las llamadas</a></li>
+                                                <li><a class="dropdown-item" href="#" id="btnAA"><i
+                                                            class="fas fa-reply"></i> <span>Respuesta
+                                                            Automática</span></a></li>
+                                                <li><a class="dropdown-item" id="btnDND"><i class="fas fa-ban"></i>
+                                                        <span>No Molestar</span></a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-phone"></i>
+                                                        <span>Llamada en espera</span></a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-microphone"></i>
+                                                        <span>Grabar todas las llamadas</span></a></li>
+                                                <li><a class="dropdown-item" href="#" id="btnLogout"><i class="fa-solid fa-right-from-bracket"></i>
+                                                    <span>Cerrar sesión</span></a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -155,7 +163,7 @@
                                     <div class="wrapInputCall">
                                         <input id="toField" type="text" placeholder="" />
                                         <span class="input-group-btn">
-                                            <button id="btnDeleteDial" class="btn btn-default" type="button"><i
+                                            <button id="btnDeleteDial" class="btn btn-default"><i
                                                     class="fa fa-chevron-left"></i></button>
                                         </span>
                                     </div>
@@ -178,7 +186,7 @@
                                 </div>
                                 <div id="wrapOptions" style="display: none">
                                     <div id="connectCall" class="call-button">
-                                        <span><i class="fa fa-phone-square"></i> Call</span>
+                                        <span><i class="fa fa-phone-square"></i> Llamar</span>
                                     </div>
                                 </div>
                             </div>
@@ -196,7 +204,7 @@
     <script src="assets/js/libs/bootstrap.min.js"></script>
     <script src="assets/js/libs/loglevel.min.js"></script>
     <script src="assets/js/libs/jssip-3.10.0.min.js"></script>
-    <script src="assets/js/index.js" type="text/javascript"></script>
+    <script src="assets/js/index.js"></script>
 </body>
 
 </html>
