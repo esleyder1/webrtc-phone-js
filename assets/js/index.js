@@ -7,12 +7,15 @@ jQuery(function () {
     let storedPassword = localStorage.getItem("sipPassword");
 
     let audioFiles = {};
-    let session;
+    let session = [];
+    let phone;
     let isDND = false;
     let isAA = false;
 
     let callTaked = false;
     let userId = null;
+    
+    window.oSipAudio = document.createElement("audio");
 
     let callOptions = {
         media: {
@@ -35,6 +38,24 @@ jQuery(function () {
     incomingCallAudio.loop = true;
     let remoteAudio = new Audio();
     remoteAudio.autoplay = true;
+
+    function addStreams() {
+        session.connection.addEventListener("addstream", function (streamEvent) {
+            console.log("addstreams", streamEvent);
+            incomingCallAudio.pause();
+
+            //attach remote stream to remoteView
+            remoteAudio.srcObject = streamEvent.stream;
+
+            // Attach local stream to selfView
+            const peerconnection = session.connection;
+            console.log(
+            "addstream peerconnection local and remote stream counts ",
+            peerconnection.getLocalStreams.length,
+            peerconnection.getRemoteStreams.length
+            );
+        });
+    }
 
     // Función para mostrar el formulario de inicio de sesión
     function showLogin() {
@@ -68,7 +89,7 @@ jQuery(function () {
     function login(server, sipUsername, sipPassword) {
         JsSIP.debug.enable("JsSIP:*");
         userLabel.text("sip:" + sipUsername + "@" + server);
-        const socket = new JsSIP.WebSocketInterface("wss://luis.bestvoiper.com:8089/ws");
+        const socket = new JsSIP.WebSocketInterface(`wss://${server}:8089/ws`)
         configuration = {
             sockets: [socket],
             uri: "sip:" + sipUsername + "@" + server,
@@ -168,15 +189,20 @@ jQuery(function () {
                 session.on("accepted", function(e) {
                     console.log("Session Accepted", e, "info");
                     updateUI();
+                
                 });
                 session.on("confirmed", function(e) {
                     console.log("sessionConfirmed", e, "info");
-                    const localStreams = session.connection.getLocalStreams();
+                    const localStreams = session.connection.getLocalStreams()[0];
                     console.log("- number of local streams: " + localStreams.length, "", "info");
     
                     const remoteStreams = session.connection.getRemoteStreams();
                     console.log("- number of remote streams: " + remoteStreams.length, "", "info");
                     updateUI();
+
+                   
+                    
+                    
                 });
                 session.on('newInfo', function(data) {
                     console.log("INFO", data, "warning");
@@ -205,19 +231,6 @@ jQuery(function () {
             });
             phone.start();
         }
-    }
-    
-    function addStreams() {
-        session.connection.on("addstream", function(streamEvent) {
-            console.log("addstreams", streamEvent);
-            incomingCallAudio.pause();
-    
-            //attach remote stream to remoteView
-            remoteAudio.srcObject = streamEvent.stream;
-    
-            // Attach local stream to selfView
-            const peerconnection = session.connection;
-        });
     }
 
     function updateUI() {
@@ -320,6 +333,7 @@ jQuery(function () {
     $("#toCallButtons").on("click", ".dialpad-char", function(e) {
         if ($(this).hasClass("dialpad-char")) {
             let digit = $(this).attr("data-value");
+            
             if (digit == "#") { digit = "pound"; }
             if (digit == "*") { digit = "star"}
             if (audioFiles[digit]) {
@@ -330,6 +344,8 @@ jQuery(function () {
                 }
                 audioFiles[digit].play();
                 lastPlayedAudio = audioFiles[digit]; // Actualiza el último archivo de audio reproducido
+          
+            
             } else {
                 console.error("El archivo de audio para el dígito " + digit + " no está disponible.");
             }
@@ -339,9 +355,14 @@ jQuery(function () {
 
             $("#wrapOptions").show();
             $("#toField").val($("#toField").val() + digit);
-            console.log("session", session);
-            //session.sendDTMF(value.toString());
             console.log(digit.toString(), "", "info");
+        }
+    });
+
+    $("#inCallButtons").on("click", ".dialpad-char", function(e) {
+        if ($(this).hasClass("dialpad-char")) {
+            let digit = $(this).attr("data-value");
+            session.sendDTMF(digit)
         }
     });
 
