@@ -133,12 +133,6 @@ button#btnDeleteDial i {
 }
 
 
-.callInfo {
-  width: 190px;
-  height: 70px;
-  float: left;
-}
-
 #connectedCall .callInfo {
   width: 240px;
 }
@@ -165,45 +159,11 @@ button#btnDeleteDial i {
   float: left;
 }
 
-#answer,
-#hangUp,
-#reject{
-  color: #FFF;
-  background-color: #389400;
-  width: 50px;
-  height: 50px;
-  float: right;
-  text-align: center;
-  font-size: 30px;
-  margin: 10px 0px 10px 0px;
-  border-radius: 25px 25px 25px 25px;
-  -moz-border-radius: 25px 25px 25px 25px;
-  -webkit-border-radius: 25px 25px 25px 25px;
-  cursor: pointer;
-  cursor: hand;
-}
-
 div#connectCall span {
   text-align: center;
   width: 100%;
 }
 
-#hangUp,
-#reject {
-  /* IE 9 */
-  /* Chrome, Safari, Opera */
-  transform: rotate(135deg);
-}
-
-#hangUp {
-  background-color: #A90002;
-}
-
-#reject {
-  background-color: #FFF;
-  color: #A90002;
-  margin-right: 10px;
-}
 
 .muteActive {
   color: #FFF;

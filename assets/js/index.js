@@ -260,6 +260,7 @@ new bootstrap.Popover(exampleEl, options)
           });
           session.on("failed", function (e) {
             statusCall("Llamada Fallida");
+            $('#mobile-status-icon').removeClass("fa-mobile-retro").addClass("fa-phone-slash").css("color","red")
             completeSession();
           });
           session.on("accepted", function (e) {
@@ -328,6 +329,7 @@ new bootstrap.Popover(exampleEl, options)
             } else {
               statusCall("Timbrando...")
               $("#callInfoText").html("Timbrando...");
+              $('#mobile-status-icon').removeClass("fa-mobile-retro").addClass("fa-phone-volume")
               $("#callInfoNumber").html(session.remote_identity.uri.user);
               //$("#callStatus").show();
             }
@@ -585,9 +587,10 @@ new bootstrap.Popover(exampleEl, options)
     if (isDND) {
       isDND = false;
       $(this).find("span").text("No Molestar");
+      $(this).addClass('text-bg-ligth').removeClass('text-bg-success');
     } else {
       isDND = true;
-      $(this).find("span").text("No Molestar | Activado");
+      $(this).addClass('text-bg-success').removeClass('text-bg-ligth');
     }
   });
 
