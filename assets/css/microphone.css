@@ -1,0 +1,18 @@
+.meter {
+    width: 8px;
+    height: 20px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+  
+    position: relative;
+    border: 1px solid #4CAF50;
+  }
+  
+  .level {
+    display: block;
+    width: 100%;
+    background-color: #4CAF50;
+    position: absolute;
+    bottom: 0; /* Coloca el nivel al fondo */
+    transform: scaleY(-1); /* Invierte la dirección de crecimiento */
+  }

@@ -76,6 +76,51 @@ new bootstrap.Popover(exampleEl, options)
         // Attach remote stream to remoteView
         remoteAudio.srcObject = streamEvent.stream;
 
+
+        // Obtener referencia al stream de audio remoto
+    var remoteStream = streamEvent.stream;
+
+    // Obtener el audio track del stream remoto
+    var remoteAudioTrack = remoteStream.getAudioTracks()[0];
+
+    // Crear un nuevo objeto AudioContext
+    var audioContext = new AudioContext();
+
+    // Crear un nuevo nodo MediaStreamAudioSourceNode
+    var source = audioContext.createMediaStreamSource(new MediaStream([remoteAudioTrack]));
+
+    // Crear un nuevo nodo Analyser
+    var analyser = audioContext.createAnalyser();
+
+    // Conectar el nodo de origen al nodo de análisis
+    source.connect(analyser);
+
+    // Definir la cantidad de datos que analizará el analizador (256 es un valor común)
+    analyser.fftSize = 256;
+
+    // Crear un array para almacenar los datos de frecuencia
+    var dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+    // Función para actualizar el medidor de nivel de audio
+    function actualizarMedidor() {
+        // Obtener el nivel de volumen actual
+        analyser.getByteFrequencyData(dataArray);
+
+        // Calcular el nivel de volumen promedio
+        var nivelVolumen = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+
+        // Convertir el nivel de volumen a un valor entre 0 y 100 (para el medidor)
+        var nivelMedidor = nivelVolumen / 255 * 100;
+
+        // Actualizar el ancho del medidor para reflejar el nivel de volumen
+        document.getElementById('speaker-level').style.width = nivelMedidor + '%';
+
+        // Volver a llamar a esta función en el próximo ciclo de animación
+        requestAnimationFrame(actualizarMedidor);
+    }
+
+    // Llamar a la función para que comience a actualizar el medidor
+    actualizarMedidor();
         // Attach local stream to selfView
         const peerconnection = session.connection;
         console.log(
@@ -126,10 +171,15 @@ new bootstrap.Popover(exampleEl, options)
 
   // Función para cerrar sesión
   function logout() {
-    if (session) {
-      session.terminate();
-      addToStatus("Logout", "", "info");
-    }
+    sessions.forEach((session) => {
+        if (session) {
+        session.terminate();
+        addToStatus("Logout", "", "info");
+        }
+    })
+    localStorage.removeItem("server");
+      localStorage.removeItem("sipUsername");
+      localStorage.removeItem("sipPassword");
     phone.stop();
   }
 
@@ -158,6 +208,7 @@ new bootstrap.Popover(exampleEl, options)
       });
       phone.on("registered", function (ev) {
         statusCall("En linea");
+        $('#mobile-status-icon').css('color', 'green')
         console.log(configuration.uri, "", "info");
         hideLogin();
 
@@ -269,7 +320,7 @@ new bootstrap.Popover(exampleEl, options)
               statusCall("¡Llamada entrante!");
               $("#incomingCallNumber").html(session.remote_identity.uri);
               //$("#incomingCall").show();
-              //$("#callControl").hide();
+              $("#callControl").hide();
             } else if (session.direction === "incoming" && callTaked == true) {
               session.answer(callOptions);
               addStreams();
@@ -284,12 +335,12 @@ new bootstrap.Popover(exampleEl, options)
             statusCall("¡Llamada establecida!");
             $("#callStatus").show();
             $("#incomingCall").hide();
-            $("#callInfoText").html("En llamada");
+            $("#callInfoText").html("¡Llamada en progreso!");
             $("#callInfoNumber").html(session.remote_identity.uri.user);
             $("#inCallButtons").show();
             incomingCallAudio.pause();
+            $("#callControl").hide();
           }
-          //$("#callControl").hide();
         } else {
           $("#incomingCall").hide();
           $("#callControl").show();
@@ -545,10 +596,11 @@ new bootstrap.Popover(exampleEl, options)
     event.preventDefault();
     if (isAA) {
       isAA = false;
-      $(this).find("span").text("Respuesta Automática");
+      $(this).addClass('text-bg-ligth').removeClass('text-bg-success');
     } else {
       isAA = true;
-      $(this).find("span").text("Respuesta Automática | Activado");
+      $(this).addClass('text-bg-success').removeClass('text-bg-ligth');
     }
   });
+
 });

@@ -69,27 +69,40 @@ select {
   justify-content: space-between;
   padding: 10px;
   border-radius: 5px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
 }
 .card-header.headerPhone p {
     padding: 0;
     margin: 0;
 }
 .card-header.headerPhone p#title {
-    font-size: 20px;
+    font-size: 17px;
 }
 
 .card-header.headerPhone p#version {
     font-size: 13px;
     font-style: italic;
 }
+.info-status {
+  font-size: 12px;
+}
+#phone-options span.badge{
+  background: #e0dee3;
+  color: #585757;
+  cursor: pointer;
+}
 
 /* Estilos para el campo de entrada */
 
 
 .call-input input {
-  width: 87%;
+  width: 86%;
   padding: 5px;
   border-radius: 3px;
+  border: 1px solid #adb5bd;
 }
 
 span.input-group-btn {
@@ -98,24 +111,19 @@ span.input-group-btn {
 }
 
 .wrapInputCall {
-    width: 84%;
+    width: 87%;
     margin: auto;
 }
 
-/* Estilos para el bot車n de llamada */
-.call-button {
-  background-color: #0074cc;
-  color: white;
-  padding: 5px 10px;
+button#btnDeleteDial {
+  padding: 0;
+  margin: 0;
   border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  display: flex;
-  text-align: center;
+  outline: none;
 }
 
-.call-button i {
-  margin-right: 5px;
+button#btnDeleteDial i {
+  font-size: 23px;
 }
 
 /* Estilos para el 赤cono de llamada */
@@ -203,25 +211,23 @@ div#connectCall span {
 }
 
 #dialPad {
-  width: 240px;
-  height: 250px;
+  width: 210px;
+  height: 204px;
   margin: 0 auto;
   margin-bottom: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 #dialPad div {
-  float: left;
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   text-align: center;
-  font-size: 26px;
-  margin: 10px 15px 0px 15px;
+  font-size: 24px;
+  margin: 5px 10px 0px 10px;
   box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  border-radius: 25px 25px 25px 25px;
-  -moz-border-radius: 25px 25px 25px 25px;
-  -webkit-border-radius: 25px 25px 25px 25px;
+  border-radius: 7px;
   border: 1px solid #E8E8E8;
   padding-top: 5px;
 }
@@ -237,6 +243,16 @@ div#connectCall span {
   background-color: #1681d5;
   box-shadow: 0px 1px 7px 2px rgba(0, 0, 0, 0.45);
   border: none;
+}
+
+div#wrapOptions {
+  text-align: center;
+  margin: 1em 0em 0em 0em;
+}
+
+button#connectCall {
+  width: 3em;
+  height: 3em;
 }
 
 #answer .fa {
@@ -324,7 +340,7 @@ div#connectCall span {
 p#title {
   display: inline-block;
   vertical-align: top;
-  width: 87%;
+  width: 85%;
 }
 
 .wrapTitleLogout .logoutButton {
