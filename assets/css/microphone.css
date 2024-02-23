@@ -1,11 +1,12 @@
 .meter {
-    width: 8px;
+    width: 6px;
     height: 20px;
     background-color: #f0f0f0;
     border-radius: 4px;
-  
     position: relative;
     border: 1px solid #4CAF50;
+    display: inline-block;
+    vertical-align: text-bottom;
   }
   
   .level {
@@ -16,3 +17,6 @@
     bottom: 0; /* Coloca el nivel al fondo */
     transform: scaleY(-1); /* Invierte la dirección de crecimiento */
   }
+  div#info-micro {
+    text-align: left;
+}

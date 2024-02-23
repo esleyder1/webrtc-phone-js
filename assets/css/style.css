@@ -407,9 +407,8 @@ button.btn-round.btn-settings i {
   font-size: 14px;
 }
 .options-in-call {
-  margin-top: 2em;
   text-align: center;
-  padding-top: 3em;
+  padding-top: 1em;
 }
 .small-btn {
   padding: 0.25rem 0.5rem;
