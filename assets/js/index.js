@@ -6,6 +6,33 @@ jQuery(function () {
   let storedUsername = localStorage.getItem("sipUsername");
   let storedPassword = localStorage.getItem("sipPassword");
 
+  logContainer = $("#status");
+  userLabel = $("#user");
+  loginButton = $("#loginButton");
+  logoutButton = $("#logoutButton");
+  var options = {
+    html: true,
+    title: "Transferir llamada",
+    //html element
+    //content: $("#popover-content")
+    content: $('[data-name="popover-content"]')
+    //Doing below won't work. Shows title only
+    //content: $("#popover-content").html()
+}
+var exampleEl = document.getElementById('example')
+new bootstrap.Popover(exampleEl, options)
+
+
+  $('#callButton').click(function() {
+    // Aquí puedes agregar la lógica para realizar la llamada
+    var texto = $('#inputField').val();
+    console.log('Texto ingresado:', texto);
+    
+    // Cierra el popover después de hacer clic en el botón de llamar
+    $('#customPopover').hide();
+  });
+
+  let configuration = null;
   let audioFiles = {};
   let session = null;
   let sessions = [];
@@ -80,14 +107,6 @@ jQuery(function () {
     $("#sipPassword").val(storedPassword);
   }
 
-  // Función para realizar la transferencia de llamada
-  function transferCall(dest) {
-    console.log("Transfer", session);
-    session.refer("sip:" + dest + server, {
-      referredBy: "sip:" + sipUsername + "@" + server,
-    });
-  }
-
   // Función para iniciar sesión
   function login(server, sipUsername, sipPassword) {
     JsSIP.debug.enable("JsSIP:*");
@@ -135,7 +154,7 @@ jQuery(function () {
         statusCall("sin registrar");
         showLogin();
         $("#status").text("");
-        //$("#callControl").hide();
+        $("#callControl").hide();
       });
       phone.on("registered", function (ev) {
         statusCall("En linea");
@@ -160,22 +179,26 @@ jQuery(function () {
         sessions.push(newSession);
         console.log("sess =>", session);
         if (ev.originator === "local") {
-            statusCall("Llamada saliente");
+          statusCall("Llamada saliente");
         } else {
-            statusCall("Llamada entrante");
+          statusCall("Llamada entrante");
         }
         // session handlers/callbacks
         var completeSession = function () {
           session = null;
           updateUI();
         };
-        console.debug("sessions=>", sessions)
+        console.debug("sessions=>", sessions);
         sessions.forEach((session) => {
           session.on("peerconnection", function (e) {
             statusCall("Conexión Establecida");
           });
           session.on("connecting", function (e) {
-            statusCall("Llamando...");
+            const regex = /sip:(\d+)@/;
+            const to = e.request.headers.To[0];
+            const ext = to.match(regex)[1];
+            console.log(ext);
+            statusCall("Llamando a: "+ ext);
           });
           session.on("process", function (e) {
             statusCall("Procesando Llamada");
@@ -207,6 +230,7 @@ jQuery(function () {
             console.log("Recibido mensaje personalizado:", customHeader);
           });
 
+          //Llamada entrante.
           if (session.direction === "incoming") {
             //si isDND es true, no entran llamada, estária en modo no molestar
             if (isDND) {
@@ -217,7 +241,7 @@ jQuery(function () {
             } else {
               if (isAA) {
                 session.answer();
-                statusCall("Llamada entrante, aceptando...")
+                statusCall("Llamada entrante, aceptando...");
               } else {
                 statusCall("¡Llamada entrante!");
                 incomingCallAudio.play();
@@ -231,69 +255,64 @@ jQuery(function () {
     }
   }
 
+  //Función que actualiza la vista dependiendo de los cambios que sucedan con la sessión.
   function updateUI() {
     console.log("CONFIGURACION", configuration);
     if (configuration && configuration.uri && configuration.password) {
       $("#wrapLogin").hide();
       $("#wrapper").show();
-      sessions.forEach(session => {
-      if (session) {
-        //statusCall("valid session");
-        if (session.isInProgress()) {
-          if (session.direction === "incoming" && callTaked == false) {
-            statusCall("¡Llamada entrante!");
-            $("#incomingCallNumber").html(session.remote_identity.uri);
-            $("#incomingCall").show();
-            $("#callControl").hide();
-          } else if (session.direction === "incoming" && callTaked == true) {
-            session.answer(callOptions);
-            addStreams();
-            deleteRowByUserId(userId);
-          } else {
-            $("#callInfoText").html("Timbrando...");
-            $("#callInfoNumber").html(session.remote_identity.uri.user);
+      sessions.forEach((session) => {
+        if (session) {
+          //statusCall("valid session");
+          if (session.isInProgress()) {
+            if (session.direction === "incoming" && callTaked == false) {
+              statusCall("¡Llamada entrante!");
+              $("#incomingCallNumber").html(session.remote_identity.uri);
+              //$("#incomingCall").show();
+              //$("#callControl").hide();
+            } else if (session.direction === "incoming" && callTaked == true) {
+              session.answer(callOptions);
+              addStreams();
+              deleteRowByUserId(userId);
+            } else {
+              statusCall("Timbrando...")
+              $("#callInfoText").html("Timbrando...");
+              $("#callInfoNumber").html(session.remote_identity.uri.user);
+              //$("#callStatus").show();
+            }
+          } else if (session.isEstablished()) {
+            statusCall("¡Llamada establecida!");
             $("#callStatus").show();
+            $("#incomingCall").hide();
+            $("#callInfoText").html("En llamada");
+            $("#callInfoNumber").html(session.remote_identity.uri.user);
+            $("#inCallButtons").show();
+            incomingCallAudio.pause();
           }
-        } else if (session.isEstablished()) {
-          statusCall("¡Llamada establecida!");
-          $("#callStatus").show();
+          //$("#callControl").hide();
+        } else {
           $("#incomingCall").hide();
-          $("#callInfoText").html("En llamada");
-          $("#callInfoNumber").html(session.remote_identity.uri.user);
-          $("#inCallButtons").show();
+          $("#callControl").show();
+          $("#callStatus").hide();
+          $("#inCallButtons").hide();
           incomingCallAudio.pause();
         }
-        $("#callControl").hide();
-      } else {
-        $("#incomingCall").hide();
-        $("#callControl").show();
-        $("#callStatus").hide();
-        $("#inCallButtons").hide();
-        incomingCallAudio.pause();
-      }
-      // Icono de micrófono silenciado
-      if (session && session.isMuted().audio) {
-        $("#muteIcon")
-          .addClass("fa-microphone-slash")
-          .removeClass("fa-microphone");
-      } else {
-        $("#muteIcon")
-          .removeClass("fa-microphone-slash")
-          .addClass("fa-microphone");
-      }
-    });
+        // Icono de micrófono silenciado
+        if (session && session.isMuted().audio) {
+          $("#muteIcon")
+            .addClass("fa-microphone-slash")
+            .removeClass("fa-microphone");
+        } else {
+          $("#muteIcon")
+            .removeClass("fa-microphone-slash")
+            .addClass("fa-microphone");
+        }
+      });
     } else {
       $("#wrapper").hide();
       $("#wrapLogin").show();
     }
   }
-
-  logContainer = $("#status");
-  userLabel = $("#user");
-  loginButton = $("#loginButton");
-  logoutButton = $("#logoutButton");
-
-  let configuration = null;
 
   if (storedServer && storedUsername && storedPassword) {
     login(storedServer, storedUsername, storedPassword);
@@ -303,6 +322,7 @@ jQuery(function () {
     showLogin();
   }
 
+  //Función para iniciar sesión
   loginButton.on("click", function () {
     const server = $("#server").val();
     const sipUsername = $("#sipUsername").val();
@@ -316,6 +336,7 @@ jQuery(function () {
     //document.getElementById("containerStatus").style.display = "block";
   });
 
+  //Función para ver la contraseña que se ingresó
   $("#revealPassword").on("click", function () {
     var passwordInput = $("#sipPassword");
     var toggleIcon = $(".toggle-password i");
@@ -328,11 +349,13 @@ jQuery(function () {
     }
   });
 
+  //Botón para cerrar sesión.
   $("#btnLogout").click(function (event) {
     event.preventDefault();
     logout();
   });
 
+  //función para pulsar teclas del teléfono que se vá a llamar.
   $("#toCallButtons").on("click", ".dialpad-char", function (e) {
     if ($(this).hasClass("dialpad-char")) {
       let digit = $(this).attr("data-value");
@@ -405,10 +428,11 @@ jQuery(function () {
   }
 
   function statusCall(status) {
-    $("#statusCall").html(status)
+    $("#statusCall").html(status);
   }
   loadAudioFiles();
 
+  //Función para borrar un número del telefono que se quiere llamar.
   $("#btnDeleteDial").on("click", function () {
     const toField = $("#toField");
     toField.val(toField.val().slice(0, -1));
@@ -417,11 +441,11 @@ jQuery(function () {
     }
   });
 
+  //Función para llamar a una extensión (botón llamar)
   $("#connectCall").on("click", function () {
     const dest = $("#toField").val();
     statusCall("Calling");
     phone.call(dest, callOptions);
-    
 
     $("#toField").val("");
 
@@ -429,55 +453,73 @@ jQuery(function () {
     addStreams();
   });
 
-  $("#answer").on("click", function () {
-    console.log("Hold", "", "info");
-
-    session.answer(callOptions);
-    addStreams();
+  //Función para responder la llamada
+  $("#answer").click(function () {
+    sessions.forEach((session) => {
+      console.log("Hold", "", "info");
+      session.answer(callOptions);
+      addStreams();
+    });
   });
 
-  const hangup = () => {
-    session.terminate();
-  };
 
-  $("#hangUp").on("click", hangup);
-  $("#reject").on("click", hangup);
+  //funcion para colgar la llamada
+  $("#reject", "#hangUp").click(function(){
+    sessions.forEach((session) => {
+        session.terminate();
+    })    
+  })
 
+  //Función que habilita el modo - Mute de la llamada.
   $("#mute").on("click", function () {
     console.log("MUTE CLICKED");
-    console.log("MUTE CLICKED", "", "info");
-    if (session.isMuted().audio) {
-      session.unmute({
-        audio: true,
-      });
-    } else {
-      session.mute({
-        audio: true,
-      });
-    }
+    sessions.forEach((session) => {
+        if (session.isMuted().audio) {
+        session.unmute({
+            audio: true,
+        });
+        $(this).find('i').removeClass("fa-microphone-slash").addClass("fa-microphone");
+        $(this).removeClass('btn-light').addClass("btn-success")
+        } else {
+        session.mute({
+            audio: true,
+        });
+        $(this).find('i').removeClass("fa-microphone").addClass("fa-microphone-slash");
+        $(this).removeClass('btn-light').addClass("btn-success")
+        }
+    });
     updateUI();
   });
 
+  //Funcion que habilita el modo - Lllamada en espera.
   $("#btnHoldUnhold").on("click", function () {
-    console.log("status", session.isOnHold().local);
-    if (!session.isOnHold().local) {
-      session.hold();
-      console.log("Hold", "", "info");
-      $("#btnHoldUnhold").text("Quitar de espera");
-      $("#btnHoldUnhold").css("background-color", "#32CD32");
-    } else {
-      session.unhold();
-      console.log("unHold", "", "info");
-      $("#btnHoldUnhold").text("Poner en espera");
-      $("#btnHoldUnhold").css("background-color", "#4285F4");
-    }
+    sessions.forEach((session) => {
+        console.log("status", session.isOnHold().local);
+        if (!session.isOnHold().local) {
+        session.hold();
+        console.log("Hold", "", "info");
+        $(this).find('i').removeClass("fa-circle-pause").addClass("fa-circle-play");
+        $(this).removeClass('btn-light').addClass("btn-success")
+        } else {
+        session.unhold();
+        console.log("unHold", "", "info");
+        $(this).find('i').removeClass("fa-circle-play").addClass("fa-circle-pause");
+        $(this).removeClass('btn-success').addClass("btn-light")
+        }
+    });
     updateUI();
   });
 
-  $("#btnTransferCall").on("click", function () {
-    transferCall("700");
-    console.log("Parkint to 700", "", "info");
+  // Función para realizar la transferencia de llamada
+  $("#btnTransferCall").click(function(){
+    console.log("Transfer", session);
+    session.refer("sip:" + dest + server, {
+      referredBy: "sip:" + sipUsername + "@" + server,
+    });
+    $(this).find('i').removeClass("fa-circle-play").addClass("fa-circle-pause");
+    $(this).removeClass('btn-success').addClass("btn-light")
   });
+
 
   $("#toField").on("keypress", function (e) {
     if (e.which === 13) {
@@ -486,6 +528,7 @@ jQuery(function () {
     }
   });
 
+    // Función que habilita el modo no molestar.(DND)
   $("#btnDND").click(function (event) {
     event.preventDefault();
     if (isDND) {
@@ -497,6 +540,7 @@ jQuery(function () {
     }
   });
 
+  //Función que habilita 
   $("#btnAA").click(function (event) {
     event.preventDefault();
     if (isAA) {

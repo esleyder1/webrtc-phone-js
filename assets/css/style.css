@@ -43,7 +43,6 @@ label {
   font-size: 16px;
 }
 
-input[type="text"],
 input[type="password"],
 select {
   width: 100%;
@@ -160,8 +159,7 @@ span.input-group-btn {
 
 #answer,
 #hangUp,
-#reject,
-#mute {
+#reject{
   color: #FFF;
   background-color: #389400;
   width: 50px;
@@ -197,33 +195,6 @@ div#connectCall span {
   background-color: #FFF;
   color: #A90002;
   margin-right: 10px;
-}
-
-#mute {
-  color: #FFF;
-  background-color: #389400;
-  width: 260px;
-  height: 50px;
-  font-size: 30px;
-  text-align: center;
-  margin: 20px 20px 0px 20px;
-  border-radius: 5px 5px 5px 5px;
-  -moz-border-radius: 5px 5px 5px 5px;
-  -webkit-border-radius: 5px 5px 5px 5px;
-  cursor: pointer;
-  cursor: hand;
-}
-
-#mute {
-  color: #545454;
-  margin: 0 auto;
-  width: 50px;
-  height: 50px;
-  margin: 15px 125px 10px 20px;
-  border-radius: 25px 25px 25px 25px;
-  -moz-border-radius: 25px 25px 25px 25px;
-  -webkit-border-radius: 25px 25px 25px 25px;
-  background-color: #FFF;
 }
 
 .muteActive {
@@ -451,8 +422,22 @@ button.btn-round.btn-settings {
   margin: 0;
   border-radius: 50%;
 }
+.btn-round{
+  border-radius: 50%;
+}
 button.btn-round.btn-settings i {
   padding:0;
   margin: 0;
   font-size: 14px;
+}
+.options-in-call {
+  margin-top: 2em;
+  text-align: center;
+  padding-top: 3em;
+}
+.small-btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  border-radius: 0.2rem;
 }
