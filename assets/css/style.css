@@ -427,3 +427,6 @@ button#mute {
 .hangup-call{
   transform: rotate(135deg)
 }
+.icon-reply{
+  transform: rotateY(180deg)
+}
