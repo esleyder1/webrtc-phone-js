@@ -15,21 +15,20 @@ jQuery(function () {
     title: "Transferir llamada",
     //html element
     //content: $("#popover-content")
-    content: $('[data-name="popover-content"]')
+    content: $('[data-name="popover-content"]'),
     //Doing below won't work. Shows title only
     //content: $("#popover-content").html()
-}
-var exampleEl = document.getElementById('example')
-new bootstrap.Popover(exampleEl, options)
+  };
+  var exampleEl = document.getElementById("example");
+  new bootstrap.Popover(exampleEl, options);
 
-
-  $('#callButton').click(function() {
+  $("#callButton").click(function () {
     // Aquí puedes agregar la lógica para realizar la llamada
-    var texto = $('#inputField').val();
-    console.log('Texto ingresado:', texto);
-    
+    var texto = $("#inputField").val();
+    console.log("Texto ingresado:", texto);
+
     // Cierra el popover después de hacer clic en el botón de llamar
-    $('#customPopover').hide();
+    $("#customPopover").hide();
   });
 
   let configuration = null;
@@ -127,14 +126,14 @@ new bootstrap.Popover(exampleEl, options)
   // Función para cerrar sesión
   function logout() {
     sessions.forEach((session) => {
-        if (session) {
+      if (session) {
         session.terminate();
         addToStatus("Logout", "", "info");
-        }
-    })
+      }
+    });
     localStorage.removeItem("server");
-      localStorage.removeItem("sipUsername");
-      localStorage.removeItem("sipPassword");
+    localStorage.removeItem("sipUsername");
+    localStorage.removeItem("sipPassword");
     phone.stop();
   }
 
@@ -163,7 +162,7 @@ new bootstrap.Popover(exampleEl, options)
       });
       phone.on("registered", function (ev) {
         statusCall("En linea");
-        $('#mobile-status-icon').css('color', 'green')
+        $("#mobile-status-icon").css("color", "green");
         console.log(configuration.uri, "", "info");
         hideLogin();
 
@@ -192,6 +191,23 @@ new bootstrap.Popover(exampleEl, options)
         // session handlers/callbacks
         var completeSession = function () {
           session = null;
+          $("#connectCall").attr("disabled", false);
+          $("#connectCall").show();
+          $("#hangUpCall").hide();
+
+          $("#phone-options").show();
+
+          $("#callerId").text();
+          $("#wrapCallerId").hide();
+          $("#optionsInCall").hide();
+          $("#info-micro").addClass("align-left");
+
+          statusCall("Llamada Finalizada");
+          $("#mobile-status-icon")
+            .removeClass("fa-mobile-retro")
+            .addClass("fa-phone-slash")
+            .addClass('fa-square-phone"')
+            .css("color", "orange");
           updateUI();
         };
         console.debug("sessions=>", sessions);
@@ -204,7 +220,7 @@ new bootstrap.Popover(exampleEl, options)
             const to = e.request.headers.To[0];
             const ext = to.match(regex)[1];
             console.log(ext);
-            statusCall("Llamando a: "+ ext);
+            statusCall("Llamando a: " + ext);
           });
           session.on("process", function (e) {
             statusCall("Procesando Llamada");
@@ -215,7 +231,10 @@ new bootstrap.Popover(exampleEl, options)
           });
           session.on("failed", function (e) {
             statusCall("Llamada Fallida");
-            $('#mobile-status-icon').removeClass("fa-mobile-retro").addClass("fa-phone-slash").css("color","red")
+            $("#mobile-status-icon")
+              .removeClass("fa-mobile-retro")
+              .addClass("fa-phone-slash")
+              .css("color", "red");
             completeSession();
           });
           session.on("accepted", function (e) {
@@ -282,21 +301,40 @@ new bootstrap.Popover(exampleEl, options)
               addStreams();
               deleteRowByUserId(userId);
             } else {
-              statusCall("Timbrando...")
+              statusCall("Timbrando...");
               $("#callInfoText").html("Timbrando...");
-              $('#mobile-status-icon').removeClass("fa-mobile-retro").addClass("fa-phone-volume")
+              $("#mobile-status-icon")
+                .removeClass("fa-phone-slash")
+                .removeClass("fa-mobile-retro")
+                .addClass("fa-phone-volume")
+                .css("color", "green");
               $("#callInfoNumber").html(session.remote_identity.uri.user);
+              $("#connectCall").hide();
+              $("#hangUpCall").hide();
               //$("#callStatus").show();
             }
           } else if (session.isEstablished()) {
             statusCall("¡Llamada en progreso!");
+            $("#mobile-status-icon")
+              .removeClass("fa-phone-slash")
+              .addClass("fa-phone-volume")
+              .css("color", "green");
             $("#incomingCall").hide();
-            $('#wrap-phone-options').hide();
+            $("#phone-options").hide();
+
+            //ocultar el input de escribir.
+            $(".wrapInputCall").hide();
+
             //$("#inCallButtons").show();
-            $('#callerId').text(session.remote_identity.uri.user)
-            $('#wrapCallerId').show()
-            $('#optionsInCall').show()
+            $("#callerId").text(session.remote_identity.uri.user);
+            $("#wrapCallerId").show();
+            $("#optionsInCall").show();
+            $("#info-micro").removeClass("align-left");
             incomingCallAudio.pause();
+
+            $("#connectCall").hide();
+            $("#hangUpCall").show();
+
             //$("#callControl").hide();
           }
         } else {
@@ -305,14 +343,15 @@ new bootstrap.Popover(exampleEl, options)
           $("#callStatus").hide();
           $("#inCallButtons").hide();
           incomingCallAudio.pause();
+          $("#info-micro").addClass("align-left");
         }
         // Icono de micrófono silenciado
         if (session && session.isMuted().audio) {
-          $("#muteIcon")
+          $("#mute i")
             .addClass("fa-microphone-slash")
             .removeClass("fa-microphone");
         } else {
-          $("#muteIcon")
+          $("#mute i")
             .removeClass("fa-microphone-slash")
             .addClass("fa-microphone");
         }
@@ -332,7 +371,8 @@ new bootstrap.Popover(exampleEl, options)
   }
 
   //Función para iniciar sesión
-  loginButton.on("click", function () {
+  loginButton.on("click", function (e) {
+    e.preventDefault();
     const server = $("#server").val();
     const sipUsername = $("#sipUsername").val();
     const sipPassword = $("#sipPassword").val();
@@ -398,14 +438,14 @@ new bootstrap.Popover(exampleEl, options)
 
       $("#wrapOptions").show();
       $("#toField").val($("#toField").val() + digit);
+      $("#connectCall").attr("disabled", false);
       console.log(digit.toString(), "", "info");
-    }
-  });
 
-  $("#inCallButtons").on("click", ".dialpad-char", function (e) {
-    if ($(this).hasClass("dialpad-char")) {
-      let digit = $(this).attr("data-value");
-      //session.sendDTMF(digit);
+      sessions.forEach((session) => {
+        if(session.isEstablished()){
+            session.sendDTMF(digit);
+        }  
+      });
     }
   });
 
@@ -453,10 +493,11 @@ new bootstrap.Popover(exampleEl, options)
   //Función para llamar a una extensión (botón llamar)
   $("#connectCall").on("click", function () {
     const dest = $("#toField").val();
-    statusCall("Calling");
+    //statusCall("Calling");
     phone.call(dest, callOptions);
 
     $("#toField").val("");
+    $(this).attr("disabled", true);
 
     updateUI();
     addStreams();
@@ -471,31 +512,38 @@ new bootstrap.Popover(exampleEl, options)
     });
   });
 
-
   //funcion para colgar la llamada
-  $("#reject", "#hangUp").click(function(){
+  $("#reject", "#hangUp").click(function () {
     sessions.forEach((session) => {
-        session.terminate();
-    })    
-  })
+      session.terminate();
+    });
+  });
 
   //Función que habilita el modo - Mute de la llamada.
-  $("#mute").on("click", function () {
+  $("#mute").click(function () {
     console.log("MUTE CLICKED");
     sessions.forEach((session) => {
-        if (session.isMuted().audio) {
+      if (session.isMuted().audio) {
         session.unmute({
-            audio: true,
+          audio: true,
         });
-        $(this).find('i').removeClass("fa-microphone-slash").addClass("fa-microphone");
-        $(this).removeClass('btn-light').addClass("btn-success")
-        } else {
+        $(this)
+          .find("i")
+          .removeClass("fa-microphone-slash")
+          .addClass("fa-microphone");
+        $(this).removeClass("btn-light").addClass("btn-success");
+        $("#info-micro").show();
+      } else {
         session.mute({
-            audio: true,
+          audio: true,
         });
-        $(this).find('i').removeClass("fa-microphone").addClass("fa-microphone-slash");
-        $(this).removeClass('btn-light').addClass("btn-success")
-        }
+        $(this)
+          .find("i")
+          .removeClass("fa-microphone")
+          .addClass("fa-microphone-slash");
+        $(this).removeClass("btn-light").addClass("btn-success");
+        $("#info-micro").hide();
+      }
     });
     updateUI();
   });
@@ -503,32 +551,41 @@ new bootstrap.Popover(exampleEl, options)
   //Funcion que habilita el modo - Lllamada en espera.
   $("#btnHoldUnhold").on("click", function () {
     sessions.forEach((session) => {
-        console.log("status", session.isOnHold().local);
-        if (!session.isOnHold().local) {
+      console.log("status", session.isOnHold().local);
+      if (!session.isOnHold().local) {
         session.hold();
         console.log("Hold", "", "info");
-        $(this).find('i').removeClass("fa-circle-pause").addClass("fa-circle-play");
-        $(this).removeClass('btn-light').addClass("btn-success")
-        } else {
+        $(this)
+          .find("i")
+          .removeClass("fa-circle-pause")
+          .addClass("fa-circle-play");
+        $(this).removeClass("btn-light").addClass("btn-success");
+      } else {
         session.unhold();
         console.log("unHold", "", "info");
-        $(this).find('i').removeClass("fa-circle-play").addClass("fa-circle-pause");
-        $(this).removeClass('btn-success').addClass("btn-light")
-        }
+        $(this)
+          .find("i")
+          .removeClass("fa-circle-play")
+          .addClass("fa-circle-pause");
+        $(this).removeClass("btn-success").addClass("btn-light");
+      }
     });
     updateUI();
   });
 
   // Función para realizar la transferencia de llamada
-  $("#btnTransferCall").click(function(){
-    console.log("Transfer", session);
-    session.refer("sip:" + dest + server, {
-      referredBy: "sip:" + sipUsername + "@" + server,
+  $("#btnTransferCall").click(function () {
+    sessions.forEach((session) => {
+      console.log("Transfer", session);
+      const ext = $("#inputExtToTransfer").val();
+      session.refer("sip:" + ext + server, {
+        referredBy: "sip:" + sipUsername + "@" + server,
+      });
     });
-    $(this).find('i').removeClass("fa-circle-play").addClass("fa-circle-pause");
-    $(this).removeClass('btn-success').addClass("btn-light")
-  });
 
+    $(this).find("i").removeClass("fa-circle-play").addClass("fa-circle-pause");
+    $(this).removeClass("btn-success").addClass("btn-light");
+  });
 
   $("#toField").on("keypress", function (e) {
     if (e.which === 13) {
@@ -537,39 +594,39 @@ new bootstrap.Popover(exampleEl, options)
     }
   });
 
-    // Función que habilita el modo no molestar.(DND)
+  // Función que habilita el modo no molestar.(DND)
   $("#btnDND").click(function (event) {
     event.preventDefault();
     if (isDND) {
       isDND = false;
       $(this).find("span").text("No Molestar");
-      $(this).addClass('text-bg-ligth').removeClass('text-bg-success');
+      $(this).addClass("text-bg-ligth").removeClass("text-bg-success");
     } else {
       isDND = true;
-      $(this).addClass('text-bg-success').removeClass('text-bg-ligth');
+      $(this).addClass("text-bg-success").removeClass("text-bg-ligth");
     }
   });
 
-  //Función que habilita 
+  //Función que habilita
   $("#btnAA").click(function (event) {
     event.preventDefault();
     if (isAA) {
       isAA = false;
-      $(this).addClass('text-bg-ligth').removeClass('text-bg-success');
+      $(this).addClass("text-bg-ligth").removeClass("text-bg-success");
     } else {
       isAA = true;
-      $(this).addClass('text-bg-success').removeClass('text-bg-ligth');
+      $(this).addClass("text-bg-success").removeClass("text-bg-ligth");
     }
   });
 
-  $('#toField').on('input', function(){
+  $("#toField").on("input", function () {
     var extension = $(this).val();
     if (extension.length >= 1) {
-        
-        $('#wrapOptions').show(); 
+      $("#wrapOptions").show();
+      $("#connectCall").attr("disabled", false);
     } else {
-        $('#wrapOptions').hide();
+      $("#wrapOptions").hide();
+      $("#connectCall").attr("disabled", true);
     }
-   });
-
+  });
 });

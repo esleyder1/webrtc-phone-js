@@ -17,6 +17,9 @@
     bottom: 0; /* Coloca el nivel al fondo */
     transform: scaleY(-1); /* Invierte la dirección de crecimiento */
   }
-  div#info-micro {
+  .align-left {
     text-align: left;
+}
+span.meter-icon i {
+  color: #6d6b6b;
 }
