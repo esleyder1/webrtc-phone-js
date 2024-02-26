@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="assets/css/libs/font-awesome-6.min.css">
     <link rel="stylesheet" href="assets/css/style.css" type="text/css">
     <link rel="stylesheet" href="assets/css/microphone.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/incomming.css" type="text/css">
     <title>WebRTC - Phone</title>
 </head>
 
@@ -84,24 +85,6 @@
             </div>
             <div id="wrapper" class="col-md-4 col-sm-12 justify-content-evenly">
                 <div class="wrap">
-
-
-                    <div id="incomingCall" style="display: none">
-                        <div id="statusMessage"></div>
-                        <div class="callInfo">
-                            <h3>LLamada entrante</h3>
-                            <p id="incomingCallNumber">Unknown</p>
-                        </div>
-                        <div id="answer"> <i class="fa fa-phone-square"></i></div>
-                        <div id="reject"> <i class="fa fa-phone-square"></i></div>
-                    </div>
-                    <div id="callStatus" style="display: none">
-                        <div class="callInfo">
-                            <h3 id="callInfoText">info text goes here</h3>
-                            <p id="callInfoNumber">info number goes here</p>
-                        </div>
-                        <div id="hangUp"> <i class="fa fa-phone-square"></i></div>
-                    </div>
                     <div id="inCallButtons" style="display: none">
                         <div id="dialPad">
                             <div class="dialpad-char" data-value="1" unselectable="on">1</div>
@@ -119,12 +102,8 @@
                         </div>
 
                     </div>
-
-
                     <div id="callControl">
-
                         <div class="card">
-
                             <div class="card-header headerPhone">
                                 <div class="wrapTitleLogout">
                                     <div class="wrapTitle">
@@ -151,11 +130,11 @@
                                         class="small text">Usuario</span></div>
 
                             </div>
-                            <div class="card-body" id="padPhone">
+                            <div class="card-body" id="padPhone" >
                                 <h7 class="card-title" id="user"></h7>
-                                <div id="to" class="call-input">
+                                <!--Llamada saliente-->
+                                <div id="to">
                                     <div class="wrapInputCall">
-
                                         <input id="toField" type="text" placeholder="" />
                                         <span class="input-group-btn">
                                             <button id="btnDeleteDial" class="btn btn-default"><i
@@ -179,11 +158,38 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!--Llamada entrante-->
+                                <div id="incomming" style="display: none;">
+                                    <div class="wrapIncomming">
+                                        <div class="row">
+                                            <div class="call-animation">
+                                                <div class="extAnimation">
+                                                    <span id="incommingCallerId"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col text-left">
+                                                <button id="btnAnswer" class="btn btn-success btn-sm btn-answer-call">
+                                                    <i class="fa fa-phone"></i> <span>Contestar</span>
+                                                </button>
+                                            </div>
+                                            <div class="col text-right">
+                                                <button class="btn btn-danger btn-sm btnHangUp">
+                                                    <i class="fa fa-phone hangup-call"></i> <span>Rechazar</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Lllamada entrante fin-->
+
                                 <div id="wrapOptions" style="display: none">
                                     <button id="connectCall" class="btn btn-primary call-button btn-round">
                                         <span><i class="fa fa-phone"></i></span>
                                     </button>
-                                    <button id="hangUpCall" class="btn btn-danger call-button btn-round">
+                                    <button id="btnRejectCall" class="btn btn-danger call-button btn-round btnHangUp">
                                         <span><i class="fa fa-phone hangup-call"></i></span>
                                     </button>
                                 </div>
@@ -211,8 +217,9 @@
                                                     data-bs-placement="top" data-bs-toggle="popover"
                                                     title="Transferir llamada"><i
                                                         class="fa-solid fa-reply icon-reply"></i></button>
-                                                <button id="joinCall" class="btn btn-light" data-bs-toggle="offcanvas" data-bs-target="#offcanvasConference"
-                                                aria-controls="offcanvasConference"><i
+                                                <button id="joinCall" class="btn btn-light" data-bs-toggle="offcanvas"
+                                                    data-bs-target="#offcanvasConference"
+                                                    aria-controls="offcanvasConference"><i
                                                         class="fa fa-user-group"></i></button>
                                             </div>
                                         </div>
@@ -254,20 +261,19 @@
             </div>
         </div>
     </div>
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasConference" aria-labelledby="offcanvasExampleLabel">
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasConference"
+        aria-labelledby="offcanvasExampleLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasExampleLabel">Personas Activas</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-
             <ul id="listExtension" class="list-group"></ul>
             <hr>
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Extensión" id="inputExtToConference">
-                    <button type="submit" class="btn btn-primary" id="btnAddToConference">Llamar</button>
-                </div>
-           
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Extensión" id="inputExtToConference">
+                <button type="submit" class="btn btn-primary" id="btnAddToConference">Llamar</button>
+            </div>
         </div>
 
     </div>

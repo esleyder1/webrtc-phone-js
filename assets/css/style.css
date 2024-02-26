@@ -1,11 +1,11 @@
-@charset"UTF-8";
+@charset "UTF-8";
 
 /* CSS Document */
 html,
 body {
   margin: 1em;
   padding: 0em;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
   color: #494949;
 }
 div#wrapper .wrap {
@@ -16,7 +16,6 @@ div#wrapLogin {
   display: grid;
   place-items: center;
 }
-
 
 /* Login */
 
@@ -70,33 +69,43 @@ select {
   padding: 10px;
   border-radius: 5px;
   -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+#callControl .card {
+  width: 90%;
 }
 .card-header.headerPhone p {
-    padding: 0;
-    margin: 0;
+  padding: 0;
+  margin: 0;
 }
 .card-header.headerPhone p#title {
-    font-size: 17px;
+  font-size: 17px;
 }
 
 .card-header.headerPhone p#version {
-    font-size: 13px;
-    font-style: italic;
+  font-size: 13px;
+  font-style: italic;
 }
 .info-status {
   font-size: 12px;
 }
-#phone-options span.badge{
+#phone-options span.badge {
   background: #e0dee3;
   color: #585757;
   cursor: pointer;
 }
+.bg-incomming-call {
+  background: #dee2e6;
+}
 
 /* Estilos para el campo de entrada */
-
+.call-input {
+  width: 84%;
+  margin: 0 auto;
+}
 
 .call-input input {
   width: 84%;
@@ -106,13 +115,17 @@ select {
 }
 
 span.input-group-btn {
-    width: 10%;
-    display: inline-block;
+  width: 10%;
+  display: inline-block;
 }
 
 .wrapInputCall {
-    width: 87%;
-    margin: auto;
+  width: 84%;
+  margin: auto;
+}
+
+.wrapInputCall input {
+  width: 85%;
 }
 
 button#btnDeleteDial {
@@ -131,7 +144,6 @@ button#btnDeleteDial i {
   content: "\f095";
   font-family: "Font Awesome 5 Free";
 }
-
 
 #connectedCall .callInfo {
   width: 240px;
@@ -164,9 +176,8 @@ div#connectCall span {
   width: 100%;
 }
 
-
 .muteActive {
-  color: #FFF;
+  color: #fff;
   background-color: #389400;
 }
 
@@ -187,13 +198,13 @@ div#connectCall span {
   margin: 5px 10px 0px 10px;
   box-sizing: border-box;
   border-radius: 7px;
-  border: 1px solid #E8E8E8;
+  border: 1px solid #e8e8e8;
   padding-top: 5px;
 }
 
 #dialPad div:hover {
-  background-color: #2196F3;
-  color: #FFF;
+  background-color: #2196f3;
+  color: #fff;
   cursor: pointer;
   cursor: hand;
 }
@@ -209,13 +220,14 @@ div#wrapOptions {
   margin: 8px 0em 0em 0em;
 }
 
-button#connectCall,#hangUpCall {
+button#connectCall,
+#btnRejectCall {
   width: 3em;
   height: 3em;
 }
 
-#hangUpCall {
-  display: none
+#btnRejectCall {
+  display: none;
 }
 
 #answer .fa {
@@ -227,26 +239,6 @@ button#connectCall,#hangUpCall {
   animation-iteration-count: infinite;
   animation-direction: alternate;
   animation-play-state: running;
-}
-
-@-webkit-keyframes callp {
-  from {
-    color: #FFF;
-  }
-
-  to {
-    color: #389400;
-  }
-}
-
-@keyframes callp {
-  from {
-    color: #FFF;
-  }
-
-  to {
-    color: #389400;
-  }
 }
 
 #answer {
@@ -266,7 +258,7 @@ button#connectCall,#hangUpCall {
   }
 
   to {
-    background: #FFF;
+    background: #fff;
   }
 }
 
@@ -276,12 +268,12 @@ button#connectCall,#hangUpCall {
   }
 
   to {
-    background: #FFF;
+    background: #fff;
   }
 }
 
- /* Agrega estilos CSS según sea necesario */
- .password-input-container {
+/* Agrega estilos CSS según sea necesario */
+.password-input-container {
   position: relative;
 }
 
@@ -295,10 +287,11 @@ button#connectCall,#hangUpCall {
   height: 47px;
 }
 
-.wrapTitleLogout .wrapTitle, .wrapTitleLogout .logoutButton {
-    display: inline-block;
-    width: 100%;
-    vertical-align: top;
+.wrapTitleLogout .wrapTitle,
+.wrapTitleLogout .logoutButton {
+  display: inline-block;
+  width: 100%;
+  vertical-align: top;
 }
 p#title {
   display: inline-block;
@@ -307,20 +300,20 @@ p#title {
 }
 
 .wrapTitleLogout .logoutButton {
-    width: 14px;
-    float: right;
+  width: 14px;
+  float: right;
 }
 
 .logoutButton {
-    background: #f8f8f8f5;
+  background: #f8f8f8f5;
 }
 #logoutButton {
-    float: right;
-    border: none;
-    position: relative;
-    color: #606d73;
-    padding: 0;
-    background: none;
+  float: right;
+  border: none;
+  position: relative;
+  color: #606d73;
+  padding: 0;
+  background: none;
 }
 button#clearLogButton i {
   padding: 0;
@@ -328,10 +321,10 @@ button#clearLogButton i {
 }
 
 label.wrapSpy {
-    margin-top: 2em;
-    margin-left: 4px;
-    display: inline;
-    margin-right: 5px;
+  margin-top: 2em;
+  margin-left: 4px;
+  display: inline;
+  margin-right: 5px;
 }
 #clearLogButton {
   float: left;
@@ -347,7 +340,7 @@ label.wrapSpy {
 }
 button#clearLogButton:hover {
   background: #c1bbbb;
-  transition: .3s;
+  transition: 0.3s;
 }
 
 #status {
@@ -357,16 +350,23 @@ button#clearLogButton:hover {
   overflow-y: auto;
 }
 
-#status p{
+#status p {
   padding: 0px;
   margin: 2px;
 }
 
-
-.debug { color: #333; }
-.info { color: #000000; }
-.warn { color: #ffc107; }
-.error { color: #dc3545; }
+.debug {
+  color: #333;
+}
+.info {
+  color: #000000;
+}
+.warn {
+  color: #ffc107;
+}
+.error {
+  color: #dc3545;
+}
 
 h7#user {
   font-size: 12px;
@@ -401,11 +401,11 @@ button.btn-round.btn-settings {
   margin: 0;
   border-radius: 50%;
 }
-.btn-round{
+.btn-round {
   border-radius: 50%;
 }
 button.btn-round.btn-settings i {
-  padding:0;
+  padding: 0;
   margin: 0;
   font-size: 14px;
 }
@@ -424,9 +424,44 @@ button#mute {
   width: 3em;
 }
 
-.hangup-call{
-  transform: rotate(135deg)
+.hangup-call {
+  transform: rotate(135deg);
 }
-.icon-reply{
-  transform: rotateY(180deg)
+.icon-reply {
+  transform: rotateY(180deg);
 }
+div#incomming {
+  vertical-align: top;
+  margin: 0 auto;
+  width: 87%;
+}
+.btn-green {
+  background-color: #3db13e;
+  color: #fff;
+}
+
+.btn-answer-call i {
+  -webkit-animation: callp 0.7s;
+  animation: callp 0.7s;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-direction: alternate;
+  -webkit-animation-play-state: running;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-play-state: running;
+}
+
+@-webkit-keyframes callp {
+  0% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+  100% {
+    transform: rotate(-5deg);
+  }
+}
+
+
+//animacion
