@@ -211,7 +211,8 @@
                                                     data-bs-placement="top" data-bs-toggle="popover"
                                                     title="Transferir llamada"><i
                                                         class="fa-solid fa-reply icon-reply"></i></button>
-                                                <button id="joinCall" class="btn btn-light"><i
+                                                <button id="joinCall" class="btn btn-light" data-bs-toggle="offcanvas" data-bs-target="#offcanvasConference"
+                                                aria-controls="offcanvasConference"><i
                                                         class="fa fa-user-group"></i></button>
                                             </div>
                                         </div>
@@ -253,13 +254,7 @@
             </div>
         </div>
     </div>
-
-    <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample"
-        aria-controls="offcanvasExample">
-        Button with data-bs-target
-    </button>
-
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasConference" aria-labelledby="offcanvasExampleLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasExampleLabel">Personas Activas</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
