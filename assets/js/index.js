@@ -36,6 +36,13 @@ jQuery(function () {
   let callTaked = false;
   let userId = null;
 
+  let mediaRecorder = null;
+  var callCount = 1;
+let recordedChunks = [];
+
+  let callDuration = 0; // Variable para almacenar la duración de la llamada en segundos
+let timerInterval = null; // Variable para almacenar el intervalo del temporizador
+
   window.oSipAudio = document.createElement("audio");
 
   let callOptions = {
@@ -60,15 +67,59 @@ jQuery(function () {
   let remoteAudio = new Audio();
   remoteAudio.autoplay = true;
 
+  function startRecording(stream) {
+    // Crear un nuevo objeto MediaRecorder con el flujo de audio
+    mediaRecorder = new MediaRecorder(stream);
+
+    // Array para almacenar los fragmentos de audio
+    var chunks = [];
+
+    // Escuchar el evento de datos disponibles
+    mediaRecorder.ondataavailable = function(event) {
+        chunks.push(event.data);
+    }
+
+    // Escuchar el evento de finalización de la grabación
+    mediaRecorder.onstop = function() {
+        // Combinar los fragmentos de audio en un Blob
+        var audioBlob = new Blob(chunks, { 'type' : 'audio/wav' });
+
+        // Crear un enlace de descarga para el archivo de audio
+        var audioUrl = URL.createObjectURL(audioBlob);
+        var link = document.createElement('a');
+        link.href = audioUrl;
+
+        // Nombre del archivo de audio
+        var filename = 'llamada_' + callCount + '.wav';
+        link.download = filename;
+
+        document.body.appendChild(link);
+        link.click();
+
+        // Incrementar el contador de llamadas
+        callCount++;
+
+        // Limpiar
+        chunks = [];
+        mediaRecorder = null;
+    }
+
+    // Iniciar la grabación
+    mediaRecorder.start();
+}
+
+
+
   function addStreams() {
     sessions.forEach((session) => {
       session.connection.addEventListener("addstream", function (streamEvent) {
         console.log("addstreams", streamEvent);
         incomingCallAudio.pause();
-
-        // Attach remote stream to remoteView
         remoteAudio.srcObject = streamEvent.stream;
+        // Attach remote stream to remoteView
 
+        startRecording(streamEvent.stream)
+    
         // Attach local stream to selfView
         const peerconnection = session.connection;
         console.log(
@@ -77,8 +128,25 @@ jQuery(function () {
           peerconnection.getRemoteStreams().length
         );
       });
+
     });
+
+
   }
+
+// Función para formatear el tiempo en formato mm:ss
+function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+}
+
+// Función para actualizar el contador de llamadas
+function updateCallDuration() {
+    callDuration++; // Incrementar el contador en 1 segundo
+    const formattedTime = formatTime(callDuration);
+    console.log("Duración de la llamada: " + formattedTime);
+}
 
   // Función para mostrar el formulario de inicio de sesión
   function showLogin() {
@@ -168,7 +236,7 @@ jQuery(function () {
         $("#callControl").show();
       });
       phone.on("registrationFailed", function (ev) {
-        statusCall("Registration Failed");
+        statusCall("Error en el registro");
         logout();
         updateUI();
       });
@@ -180,6 +248,7 @@ jQuery(function () {
         //     console.log("NewSession", existingSession, "info");
         //   existingSession.terminate();
         // });
+        
         sessions.push(newSession);
 
         console.log("sessions push ===>", sessions);
@@ -189,13 +258,25 @@ jQuery(function () {
           statusCall("Llamada saliente");
         } else {
           statusCall("Llamada entrante");
+
+          document.title = "¡Llamada entrante!";
+          const favicon = document.querySelector("link[rel='icon']");
+          favicon.href = "assets/images/incomming-call.png";
+
+          notify(
+            "!Alerta!",
+            "LLamada entrante de: " + ev.session.remote_identity.uri.user
+          );
           //mostrar teclado, ocultar vista de contestar llamada
           $("#incomming").show();
           $("#to").hide();
           $("#incommingCallerId").text(ev.session.remote_identity.uri.user);
         }
         // session handlers/callbacks
-        var completeSession = function () {
+        let completeSession = function () {
+          document.title = "WebRTC - Phone";
+          const favicon = document.querySelector("link[rel='icon']");
+          favicon.href = "assets/images/favicon.ico";
           sessions = [];
           incomingCallAudio.pause();
           $("#connectCall").attr("disabled", false);
@@ -208,7 +289,8 @@ jQuery(function () {
           $("#wrapCallerId").hide();
           $("#optionsInCall").hide();
           $("#info-micro").addClass("align-left");
-
+          //ocultar el input de escribir.
+          $(".wrapInputCall").show();
           statusCall("Llamada Finalizada");
           $("#mobile-status-icon")
             .removeClass("fa-mobile-retro")
@@ -223,7 +305,23 @@ jQuery(function () {
           //mostrar teclado, ocultar vista de contestar llamada
           $("#to").show();
           $("#incomming").hide();
+
+          setTimeout(function () {
+            statusCall("En linea");
+            $("#mobile-status-icon")
+              .css("color", "green")
+              .removeClass("fa-phone-slash")
+              .addClass("fa-mobile-retro");
+          }, 2000);
           updateUI();
+
+        
+          if (mediaRecorder) {
+            mediaRecorder.stop();
+        }
+
+
+
         };
         console.debug("sessions=>", sessions);
         sessions.forEach((session) => {
@@ -231,8 +329,7 @@ jQuery(function () {
             statusCall("Conexión Establecida");
           });
           session.on("connecting", function (e) {
-            
-            const ext = session.remote_identity.uri.user
+            const ext = session.remote_identity.uri.user;
             console.log(ext);
             statusCall("Llamando a: " + ext);
           });
@@ -258,9 +355,14 @@ jQuery(function () {
           session.on("confirmed", function (e) {
             statusCall("Llamada Confirmada");
             const localStreams = session.connection.getLocalStreams()[0];
+            console.log("Local streams: " + localStreams)
+            
+            
             statusCall("number of local streams: " + localStreams.length);
 
-            const remoteStreams = session.connection.getRemoteStreams();
+            const remoteStreams = session.connection.getRemoteStreams()[0];
+            startRecording(remoteStreams)
+            
             statusCall("number of remote streams: " + remoteStreams.length);
             updateUI();
             addExtension(session.remote_identity.uri.user);
@@ -428,6 +530,11 @@ jQuery(function () {
     logout();
   });
 
+  $("#btnRefresh").click(function (event) {
+    event.preventDefault();
+    login(storedServer, storedUsername, storedPassword);
+  });
+
   //función para pulsar teclas del teléfono que se vá a llamar.
   $("#toCallButtons").on("click", ".dialpad-char", function (e) {
     if ($(this).hasClass("dialpad-char")) {
@@ -523,6 +630,12 @@ jQuery(function () {
     $("#toField").val("");
     $(this).attr("disabled", true);
 
+    // Reiniciar el contador de duración de la llamada
+    callDuration = 0;
+
+    // Iniciar el temporizador
+    timerInterval = setInterval(updateCallDuration, 1000);
+    console.log(timerInterval);
     updateUI();
     addStreams();
   });
@@ -541,7 +654,6 @@ jQuery(function () {
     sessions.forEach((session) => {
       session.terminate();
     });
-    
   });
 
   //Función que habilita el modo - Mute de la llamada.
@@ -675,5 +787,24 @@ jQuery(function () {
     $("#listExtension").append(
       '<li class="list-group-item">' + extension + "</li>"
     );
+  }
+
+  function notify(title, message) {
+    if (Notification) {
+      if (Notification.permission !== "granted") {
+        Notification.requestPermission();
+      }
+      const extra = {
+        icon: "assets/images/incomming-call.png",
+        body: message,
+      };
+
+      let notification = new Notification(title, extra);
+      notification.onclick = function () {
+        try {
+          window.focus();
+        } catch (ex) {}
+      };
+    }
   }
 });
