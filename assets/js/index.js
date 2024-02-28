@@ -36,12 +36,31 @@ jQuery(function () {
   let callTaked = false;
   let userId = null;
 
-  let mediaRecorder = null;
-  var callCount = 1;
-let recordedChunks = [];
+let mediaRecorder;
+let chunks = [];
+const startButton = document.getElementById('startButton');
+const stopButton = document.getElementById('stopButton');
+const audioElement = document.getElementById('audioElement');
+
+startButton.addEventListener('click', startRecording);
+stopButton.addEventListener('click', stopRecording);
+function saveRecording() {
+    const blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
+    chunks = [];
+    
+    const url = URL.createObjectURL(blob);
+    
+    // Crear un enlace temporal
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'grabacion_audio.ogg'; // Nombre del archivo de audio
+    document.body.appendChild(link); // Agregar el enlace al DOM
+    link.click(); // Simular clic en el enlace
+    document.body.removeChild(link); // Eliminar el enlace del DOM después de la descarga
+}
 
   let callDuration = 0; // Variable para almacenar la duración de la llamada en segundos
-let timerInterval = null; // Variable para almacenar el intervalo del temporizador
+  let timerInterval = null; // Variable para almacenar el intervalo del temporizador
 
   window.oSipAudio = document.createElement("audio");
 
@@ -67,48 +86,34 @@ let timerInterval = null; // Variable para almacenar el intervalo del temporizad
   let remoteAudio = new Audio();
   remoteAudio.autoplay = true;
 
-  function startRecording(stream) {
-    // Crear un nuevo objeto MediaRecorder con el flujo de audio
+
+
+async function startRecording() {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream);
 
-    // Array para almacenar los fragmentos de audio
-    var chunks = [];
-
-    // Escuchar el evento de datos disponibles
     mediaRecorder.ondataavailable = function(event) {
         chunks.push(event.data);
-    }
+    };
 
-    // Escuchar el evento de finalización de la grabación
     mediaRecorder.onstop = function() {
-        // Combinar los fragmentos de audio en un Blob
-        var audioBlob = new Blob(chunks, { 'type' : 'audio/wav' });
-
-        // Crear un enlace de descarga para el archivo de audio
-        var audioUrl = URL.createObjectURL(audioBlob);
-        var link = document.createElement('a');
-        link.href = audioUrl;
-
-        // Nombre del archivo de audio
-        var filename = 'llamada_' + callCount + '.wav';
-        link.download = filename;
-
-        document.body.appendChild(link);
-        link.click();
-
-        // Incrementar el contador de llamadas
-        callCount++;
-
-        // Limpiar
+        const blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
         chunks = [];
-        mediaRecorder = null;
-    }
+        const audioURL = URL.createObjectURL(blob);
+        audioElement.src = audioURL;
+        saveRecording()
+    };
 
-    // Iniciar la grabación
     mediaRecorder.start();
+    startButton.disabled = true;
+    stopButton.disabled = false;
 }
 
-
+function stopRecording() {
+    mediaRecorder.stop();
+    startButton.disabled = false;
+    stopButton.disabled = true;
+}
 
   function addStreams() {
     sessions.forEach((session) => {
@@ -117,9 +122,15 @@ let timerInterval = null; // Variable para almacenar el intervalo del temporizad
         incomingCallAudio.pause();
         remoteAudio.srcObject = streamEvent.stream;
         // Attach remote stream to remoteView
+       incomingStream = streamEvent.stream;
 
-        startRecording(streamEvent.stream)
-    
+
+       startRecording(streamEvent.stream)
+
+       
+
+       
+
         // Attach local stream to selfView
         const peerconnection = session.connection;
         console.log(
@@ -128,25 +139,25 @@ let timerInterval = null; // Variable para almacenar el intervalo del temporizad
           peerconnection.getRemoteStreams().length
         );
       });
-
     });
-
-
   }
 
-// Función para formatear el tiempo en formato mm:ss
-function formatTime(seconds) {
+  // Función para formatear el tiempo en formato mm:ss
+  function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
-}
+    return `${String(minutes).padStart(
+      2,
+      "0"
+    )}:${String(remainingSeconds).padStart(2, "0")}`;
+  }
 
-// Función para actualizar el contador de llamadas
-function updateCallDuration() {
+  // Función para actualizar el contador de llamadas
+  function updateCallDuration() {
     callDuration++; // Incrementar el contador en 1 segundo
     const formattedTime = formatTime(callDuration);
     console.log("Duración de la llamada: " + formattedTime);
-}
+  }
 
   // Función para mostrar el formulario de inicio de sesión
   function showLogin() {
@@ -248,7 +259,10 @@ function updateCallDuration() {
         //     console.log("NewSession", existingSession, "info");
         //   existingSession.terminate();
         // });
-        
+
+       
+
+
         sessions.push(newSession);
 
         console.log("sessions push ===>", sessions);
@@ -267,6 +281,7 @@ function updateCallDuration() {
             "!Alerta!",
             "LLamada entrante de: " + ev.session.remote_identity.uri.user
           );
+          $("#connectCall").hide()
           //mostrar teclado, ocultar vista de contestar llamada
           $("#incomming").show();
           $("#to").hide();
@@ -315,16 +330,26 @@ function updateCallDuration() {
           }, 2000);
           updateUI();
 
-        
-          if (mediaRecorder) {
-            mediaRecorder.stop();
-        }
-
-
-
+          stopRecording()
         };
         console.debug("sessions=>", sessions);
         sessions.forEach((session) => {
+
+        session.on('sdp', function(event){
+            var sdp;
+            if (event.originator === 'local' && session.localDescription) {
+            sdp = session.localDescription.sdp;
+            } else if (event.originator === 'remote' && session.remoteDescription) {
+            sdp = session.remoteDescription.sdp;
+            }
+            
+            // Verificar si sdp está definido antes de procesarlo
+            if (sdp) {
+            // Aquí puedes almacenar el SDP capturado (por ejemplo, enviarlo a un servidor, guardarlo en una base de datos, etc.)
+            console.log('SDP:', sdp);
+            }
+        });
+
           session.on("peerconnection", function (e) {
             statusCall("Conexión Establecida");
           });
@@ -355,17 +380,23 @@ function updateCallDuration() {
           session.on("confirmed", function (e) {
             statusCall("Llamada Confirmada");
             const localStreams = session.connection.getLocalStreams()[0];
-            console.log("Local streams: " + localStreams)
-            
-            
+            console.log("Local streams: " + localStreams);
+
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(localStreams => {
+                    const mediaRecorder = new MediaRecorder(localStreams);
+                    mediaRecorder.start();
+                });
+
             statusCall("number of local streams: " + localStreams.length);
 
             const remoteStreams = session.connection.getRemoteStreams()[0];
-            startRecording(remoteStreams)
-            
+            startRecording(remoteStreams);
+
             statusCall("number of remote streams: " + remoteStreams.length);
             updateUI();
             addExtension(session.remote_identity.uri.user);
+            
           });
           session.on("newInfo", function (data) {
             console.log("INFO", data, "warning");
@@ -454,10 +485,12 @@ function updateCallDuration() {
               $("#info-micro").removeClass("align-left");
               incomingCallAudio.pause();
 
+              $('#wrapOptions').show()
               $("#connectCall").hide();
               $("#btnRejectCall").show();
 
               $("#to").show();
+              
               $("#incomming").hide();
 
               //$("#callControl").hide();
