@@ -149,10 +149,6 @@ jQuery(function () {
 
     // Reiniciar el contador de duración de la llamada
     callDuration = 0;
-
-    // Iniciar el temporizador
-    timerInterval = setInterval(updateCallDuration, 1000);
-    console.log(timerInterval);
     updateUI();
     addStreams();
   });
