@@ -113,7 +113,6 @@ jQuery(function () {
       $("#wrapOptions").show();
       $("#toField").val($("#toField").val() + digit);
       $("#connectCall").attr("disabled", false);
-      console.log(digit.toString(), "", "info");
 
       sessions.forEach((session) => {
         if (session.isEstablished()) {
@@ -140,6 +139,7 @@ jQuery(function () {
 
   //Función para llamar a una extensión (botón llamar)
   $("#connectCall").on("click", function () {
+  
     const dest = $("#toField").val();
     //statusCall("Calling");
     phone.call(dest, callOptions);
@@ -156,7 +156,6 @@ jQuery(function () {
   //Función para responder la llamada
   $("#btnAnswer").click(function () {
     sessions.forEach((session) => {
-      console.log("Hold", "", "info");
       session.answer(callOptions);
       addStreams();
     });
@@ -171,7 +170,6 @@ jQuery(function () {
 
   //Función que habilita el modo - Mute de la llamada.
   $("#mute").click(function () {
-    console.log("MUTE CLICKED");
     sessions.forEach((session) => {
       if (session.isMuted().audio) {
         session.unmute({
@@ -192,7 +190,7 @@ jQuery(function () {
           .removeClass("fa-microphone")
           .addClass("fa-microphone-slash");
         $(this).removeClass("btn-light").addClass("btn-success");
-        $("#info-micro").hide();
+        
       }
     });
     updateUI();
@@ -201,10 +199,8 @@ jQuery(function () {
   //Funcion que habilita el modo - Lllamada en espera.
   $("#btnHoldUnhold").on("click", function () {
     sessions.forEach((session) => {
-      console.log("status", session.isOnHold().local);
       if (!session.isOnHold().local) {
         session.hold();
-        console.log("Hold", "", "info");
         $(this)
           .find("i")
           .removeClass("fa-circle-pause")
@@ -212,7 +208,6 @@ jQuery(function () {
         $(this).removeClass("btn-light").addClass("btn-success");
       } else {
         session.unhold();
-        console.log("unHold", "", "info");
         $(this)
           .find("i")
           .removeClass("fa-circle-play")
@@ -227,15 +222,10 @@ jQuery(function () {
   $(".btnTransferCall").click(function () {
     var type = $(this).data("id");
     const ext = $("#inputExtToTransfer").val();
-    console.log(ext, storedServer);
     sessions.forEach((session) => {
       if (type == "blind") {
-        console.log("type", type);
-        console.log("Transfer", "sip:" + ext + "@" + storedServer);
         session.refer(ext);
       } else {
-        console.log("type", type);
-        console.log("Transfer", "sip:" + ext + "@" + storedServer);
         session.refer("sip:" + ext + "@" + storedServer, {
           referredBy: "sip:" + sipUsername + "@" + storedServer,
         });
@@ -295,5 +285,4 @@ jQuery(function () {
     const dest = $("#inputExtToConference").val();
     phone.call(dest, callOptions);
   });
-
 });

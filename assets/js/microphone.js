@@ -37,7 +37,7 @@ jQuery(function () {
       }
 
       // Iniciar el análisis de audio en tiempo real
-      analyzeAudio();
+      //analyzeAudio();
     })
     .catch(function(err) {
       console.error('Error al acceder al micrófono:', err);

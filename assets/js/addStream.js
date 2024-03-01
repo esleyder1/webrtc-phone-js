@@ -9,22 +9,21 @@ remoteAudio.autoplay = true;
 function addStreams() {
     sessions.forEach((session) => {
       session.connection.addEventListener("addstream", function (streamEvent) {
-        console.log("addstreams", streamEvent);
         incomingCallAudio.pause();
         remoteAudio.srcObject = streamEvent.stream;
         // Attach remote stream to remoteView
         incomingStream = streamEvent.stream;
 
         // Attach local stream to selfView
+        $('#info-micro').show()
         const peerconnection = session.connection;
-        startRecording(peerconnection.getLocalStreams()[0]);
-        initializeSoundMeter(peerconnection.getRemoteStreams()[0]);
+        const local = peerconnection.getLocalStreams()[0]
+        const remote = peerconnection.getRemoteStreams()[0]        
+        console.log("STREAM",remote.getAudioTracks())
+        startRecording(remote)
 
-        console.log(
-          "addstream peerconnection local and remote stream counts ",
-          peerconnection.getLocalStreams().length,
-          peerconnection.getRemoteStreams().length
-        );
+        initializeSoundMeterLocal(local);
+        initializeSoundMeterRemote(remote);
       });
     });
   }

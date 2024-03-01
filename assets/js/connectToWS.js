@@ -38,7 +38,6 @@ function connectToWS(configuration) {
         .css("color", "green")
         .removeClass("fa-phone-slash")
         .addClass("fa-mobile-retro");
-      console.log(configuration.uri, "", "info");
       hideLogin();
 
       $("#callControl").show();
@@ -50,16 +49,9 @@ function connectToWS(configuration) {
     });
     phone.on("newMessage", function (ev) {});
     phone.on("newRTCSession", function (ev) {
-      console.log("NewRTCSession", ev, "info");
       var newSession = ev.session;
-      // sessions.forEach((existingSession) => {
-      //     console.log("NewSession", existingSession, "info");
-      //   existingSession.terminate();
-      // });
 
       sessions.push(newSession);
-
-      console.log("sessions push ===>", sessions);
       if (ev.originator === "local") {
         statusCall("Llamada saliente");
       } else {
@@ -80,60 +72,12 @@ function connectToWS(configuration) {
         $("#incommingCallerId").text(ev.session.remote_identity.uri.user);
       }
       // session handlers/callbacks
-      let completeSession = function () {
-        document.title = "WebRTC - Phone";
-        const favicon = document.querySelector("link[rel='icon']");
-        favicon.href = "assets/images/favicon.ico";
-        sessions = [];
-        incomingCallAudio.pause();
-        $("#connectCall").attr("disabled", false);
-        $("#connectCall").show();
-        $("#btnRejectCall").hide();
-
-        $("#phone-options").show();
-
-        $("#callerId").text();
-        $("#wrapCallerId").hide();
-        $("#optionsInCall").hide();
-        $("#info-micro").addClass("align-left");
-        //ocultar el input de escribir.
-        $(".wrapInputCall").show();
-        statusCall("Llamada Finalizada");
-        $("#mobile-status-icon")
-          .removeClass("fa-mobile-retro")
-          .addClass("fa-phone-slash")
-          .addClass('fa-square-phone"')
-          .css("color", "orange");
-
-        //close transfer popover
-        $("#inputExtToTransfer").val("");
-        $("#transferPopover").popover("hide");
-
-        //mostrar teclado, ocultar vista de contestar llamada
-        $("#to").show();
-        $("#incomming").hide();
-
-        setTimeout(function () {
-          statusCall("En linea");
-          $("#mobile-status-icon")
-            .css("color", "green")
-            .removeClass("fa-phone-slash")
-            .addClass("fa-mobile-retro");
-        }, 2000);
-
-        stopTimer()
-
-
-        updateUI();
-      };
-      console.debug("sessions=>", sessions);
       sessions.forEach((session) => {
         session.on("peerconnection", function (e) {
           statusCall("Conexión Establecida");
         });
         session.on("connecting", function (e) {
           const ext = session.remote_identity.uri.user;
-          console.log(ext);
           statusCall("Llamando a: " + ext);
         });
         session.on("process", function (e) {
@@ -158,7 +102,6 @@ function connectToWS(configuration) {
         session.on("confirmed", function (e) {
           statusCall("Llamada Confirmada");
           const localStreams = session.connection.getLocalStreams()[0];
-          console.log("Local streams: " + localStreams);
           statusCall("number of local streams: " + localStreams.length);
 
           const remoteStreams = session.connection.getRemoteStreams()[0];
@@ -168,9 +111,7 @@ function connectToWS(configuration) {
           addExtension(session.remote_identity.uri.user);
         });
         session.on("newInfo", function (data) {
-          console.log("INFO", data, "warning");
           const customHeader = data.request.getHeader("X-MyCustom-Message");
-          console.log("Recibido mensaje personalizado:", customHeader);
         });
 
         //Llamada entrante.
@@ -199,7 +140,6 @@ function connectToWS(configuration) {
 
 //Función que actualiza la vista dependiendo de los cambios que sucedan con la sessión.
 function updateUI() {
-  console.log("CONFIGURACION", configuration);
   if (configuration && configuration.uri && configuration.password) {
     $("#wrapLogin").hide();
     $("#wrapper").show();
@@ -207,7 +147,6 @@ function updateUI() {
     if (sessions && sessions.length > 0) {
       sessions.forEach((session) => {
         if (session) {
-          console.log("sessions.length", session);
           //statusCall("valid session");
           if (session.isInProgress()) {
             if (session.direction === "incoming" && callTaked == false) {
@@ -237,7 +176,6 @@ function updateUI() {
 
             // Iniciar el temporizador
             startTimer()
-            console.log(timerInterval);
             $("#mobile-status-icon")
               .removeClass("fa-phone-slash")
               .addClass("fa-phone-volume")

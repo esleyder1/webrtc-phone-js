@@ -463,5 +463,59 @@ div#incomming {
   }
 }
 
+.tab-content {
+  padding: 10px 20px;
+}
+.nav-tabs a {
+  border: 0!important;
+  background-color: transparent!important;
+}
+.nav-tabs li.active {
+  border-bottom: 2px solid #5453d2;
+}
+.nav-tabs li {
+  border-bottom: 2px solid transparent;
+}
+.nav-tabs li a {
+  width: 100%;
+  text-align: center;
+}
+ul.nav.nav-tabs {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  overflow: hidden;
+}
+.nav-tabs li {
+  flex-basis: 90px;
+  min-width: 90px;
+  display: flex;
+  align-items: flex-start;
+  margin: 0!important;
+}
+.tabs-wrapper{
+position: relative;
+}
+span.left, span.right {
+  position: absolute;
+  height: 30px;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color:#5453D2;
+  border-radius: 50%;
+  left: -50px;
+  top: 8px;
+  cursor: pointer;
+  color: #ffffff;
+}
+span.right{
+right: -50px;
+left:unset;
 
-//animacion
+}
+.scroller-btn.inactive {
+  opacity: 0.3;
+  pointer-events: none;
+}

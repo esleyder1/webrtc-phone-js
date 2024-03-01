@@ -15,15 +15,11 @@ function updateCallDuration() {
   callDuration++; // Incrementar el contador en 1 segundo
   const formattedTime = formatTime(callDuration);
   $("#timerId").text(formattedTime);
-  console.log("Duración de la llamada: " + formattedTime);
 }
 function startTimer() {
   // Verificar si ya hay un intervalo en ejecución para evitar múltiples intervalos
   if (!timerInterval) {
     timerInterval = setInterval(updateCallDuration, 1000);
-    console.log("Contador iniciado");
-  } else {
-    console.log("El contador ya está en ejecución");
   }
 }
 
@@ -34,5 +30,4 @@ function stopTimer() {
   callDuration = 0; // Reiniciar la duración de la llamada
   const formattedTime = formatTime(callDuration); // Formatear el tiempo a 00:00
   $("#timerId").text(formattedTime); // Actualizar el texto en el elemento HTML
-  console.log("Contador detenido y reiniciado: " + formattedTime);
 }
