@@ -118,8 +118,8 @@
                                                             class="fa-solid fa-sync"></i>
                                                         <span>Refrescar registro</span></a></li>
                                                 <li><a class="dropdown-item" href="#" id="btnLogout"><i
-                                                    class="fa-solid fa-right-from-bracket"></i>
-                                                <span>Cerrar sesión</span></a></li>        
+                                                            class="fa-solid fa-right-from-bracket"></i>
+                                                        <span>Cerrar sesión</span></a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -130,10 +130,16 @@
                                         1.0</span></div>
                                 <div class="info-status" id="wrapCallerId" style="display: none"><i
                                         class="fa-solid fa-user" id="mobile-user-icon"></i> <span id="callerId"
-                                        class="small text">Usuario</span></div>
+                                        class="small text">Usuario</span>
+                                </div>
+                                <div class="info-status" id="wrapTimerId" style="display: block"><i
+                                    class="fa-solid fa-clock" id="mobile-time-icon"></i> <span id="timerId"
+                                    class="small text">00:00</span>
+                            </div>
+
 
                             </div>
-                            <div class="card-body" id="padPhone" >
+                            <div class="card-body" id="padPhone">
                                 <h7 class="card-title" id="user"></h7>
                                 <!--Llamada saliente-->
                                 <div id="to">
@@ -208,6 +214,11 @@
                                                 <div class="meter">
                                                     <span id="mic-level" class="level"></span>
                                                 </div>
+                                                <span class="meter-icon"><i class="fa-solid fa-volume-high"></i></span>
+                                                <div class="sound-meter">
+                                                    <span id="speaker-level" class="level"></span>
+                                                </div>
+
                                             </div>
                                             <div id="optionsInCall" class="col align-self-center"
                                                 style="display: none;">
@@ -235,7 +246,6 @@
                                 </div>
 
                             </div>
-
                         </div>
                     </div>
                     <div class="container mt-5">
@@ -278,12 +288,7 @@
                 <button type="submit" class="btn btn-primary" id="btnAddToConference">Llamar</button>
             </div>
         </div>
-
     </div>
-    <button id="startButton">Comenzar Grabación</button>
-    <button id="stopButton" disabled>Detener Grabación</button>
-    <audio id="audioElement" controls></audio>
-
 
     </div>
     <script src="assets/js/libs/jquery.min.js"></script>
@@ -291,11 +296,23 @@
     <script src="assets/js/libs/bootstrap.min.js"></script>
     <script src="assets/js/libs/loglevel.min.js"></script>
     <script src="assets/js/libs/jssip-3.10.0.min.js"></script>
-   
 
-    <script src="assets/js/index.js"></script>
+
+    
+
     <script src="assets/js/microphone.js"></script>
     
+    <script src="assets/js/callDuration.js"></script>
+    <script src="assets/js/loadAudioFiles.js"></script>
+    <script src="assets/js/notificationApi.js"></script>
+    <script src="assets/js/speaker.js"></script>
+    <script src="assets/js/recording.js"></script>
+    
+    <script src="assets/js/connectToWS.js"></script>
+    <script src="assets/js/login.js"></script>
+    <script src="assets/js/addStream.js"></script>
+    <script src="assets/js/index.js"></script>
+
 </body>
 
 </html>

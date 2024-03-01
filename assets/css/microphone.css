@@ -1,4 +1,4 @@
-.meter {
+.meter, .sound-meter {
     width: 6px;
     height: 20px;
     background-color: #f0f0f0;
@@ -23,4 +23,13 @@
 }
 span.meter-icon i {
   color: #6d6b6b;
+  font-size: 12px;
+}
+
+
+.bar {
+  height: 100%;
+  background-color: green;
+  width: 0; /* Inicialmente la barra está vacía */
+  transition: width 0.1s ease-in-out; /* Animación suave de la barra */
 }
