@@ -519,3 +519,24 @@ left:unset;
   opacity: 0.3;
   pointer-events: none;
 }
+
+.call-list h1 {
+  color: #333;
+  font-weight: bold;
+}
+.call-item {
+  border-bottom: 1px solid #dee2e6;
+  padding: 4px 8px 8px 10px;
+}
+.call-type {
+  font-size: 20px;
+  margin-right: 10px;
+}
+.call-number {
+  font-size: 14px;
+}
+.call-time {
+  color: #6c757d;
+  font-size: 12px;
+  display: block;
+}

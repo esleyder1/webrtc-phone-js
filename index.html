@@ -117,9 +117,13 @@
                                                 <li><a class="dropdown-item" href="#" id="btnRefresh"><i
                                                             class="fa-solid fa-sync"></i>
                                                         <span>Refrescar registro</span></a></li>
-                                                <li><a class="dropdown-item" href="#" id="btnLogout"><i
-                                                            class="fa-solid fa-right-from-bracket"></i>
-                                                        <span>Cerrar sesión</span></a></li>
+                                                <li><a class="dropdown-item" href="#" data-bs-toggle="offcanvas"
+                                                    data-bs-target="#offcanvasCallHistory"><i
+                                                    class="fa-solid fa-right-from-bracket"></i>
+                                                <span>Historial de llamadas</span></a></li>
+                                               <!--  <li><a class="dropdown-item" href="#" id="btnLogout"><i
+                                                    class="fa-solid fa-right-from-bracket"></i>
+                                                <span>Cerrar sesión</span></a></li> -->
                                             </ul>
                                         </div>
                                     </div>
@@ -132,7 +136,7 @@
                                         class="fa-solid fa-user" id="mobile-user-icon"></i> <span id="callerId"
                                         class="small text">Usuario</span>
                                 </div>
-                                <div class="info-status" id="wrapTimerId" style="display: block"><i
+                                <div class="info-status" id="wrapTimerId" style="display: none"><i
                                     class="fa-solid fa-clock" id="mobile-time-icon"></i> <span id="timerId"
                                     class="small text">00:00</span>
                             </div>
@@ -290,9 +294,24 @@
         </div>
     </div>
 
+    <!--OFFCANVAS CALL HISTORY-->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasCallHistory"
+    aria-labelledby="offcanvasCallHistoryLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasCallHistoryLabel">Historial de Llamadas
 
 
-    
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="call-list">
+            <ul id="call-history" class="list-group">
+              <!-- Las llamadas se agregarán dinámicamente aquí -->
+            </ul>
+          </div>
+    </div>
+</div>
 
     </div>
     <script src="assets/js/libs/jquery.min.js"></script>
@@ -300,9 +319,6 @@
     <script src="assets/js/libs/bootstrap.min.js"></script>
     <script src="assets/js/libs/loglevel.min.js"></script>
     <script src="assets/js/libs/jssip-3.10.0.min.js"></script>
-
-
-    
 
     <script src="assets/js/microphone.js"></script>
     

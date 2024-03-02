@@ -1,4 +1,7 @@
 let phone;
+let isDND = false;
+let isAA = false;
+
 function statusCall(status) {
   $("#statusCall").html(status);
 }
@@ -61,7 +64,7 @@ function connectToWS(configuration) {
         const favicon = document.querySelector("link[rel='icon']");
         favicon.href = "assets/images/incomming-call.png";
 
-        notify(
+        currentNotification = notify(
           "!Alerta!",
           "LLamada entrante de: " + ev.session.remote_identity.uri.user
         );
@@ -189,6 +192,7 @@ function updateUI() {
             //$("#inCallButtons").show();
             $("#callerId").text(session.remote_identity.uri.user);
             $("#wrapCallerId").show();
+            $('#wrapTimerId').show()
             $("#optionsInCall").show();
             $("#info-micro").removeClass("align-left");
             incomingCallAudio.pause();

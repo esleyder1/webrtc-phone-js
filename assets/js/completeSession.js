@@ -13,6 +13,7 @@ function completeSession() {
 
     $("#callerId").text();
     $("#wrapCallerId").hide();
+    $('#wrapTimerId').hide()
     $("#optionsInCall").hide();
     $("#info-micro").addClass("align-left");
     //ocultar el input de escribir.
