@@ -1,6 +1,8 @@
 let phone;
 let isDND = false;
 let isAA = false;
+let userRemoteExtension = null;
+let loadCallHistoryInit = false;
 
 function statusCall(status) {
   $("#statusCall").html(status);
@@ -42,6 +44,7 @@ function connectToWS(configuration) {
         .removeClass("fa-phone-slash")
         .addClass("fa-mobile-retro");
       hideLogin();
+      loadCallHistory();
 
       $("#callControl").show();
     });
@@ -55,6 +58,7 @@ function connectToWS(configuration) {
       var newSession = ev.session;
 
       sessions.push(newSession);
+      userRemoteExtension = ev.session.remote_identity.uri.user;
       if (ev.originator === "local") {
         statusCall("Llamada saliente");
       } else {
@@ -82,21 +86,26 @@ function connectToWS(configuration) {
         session.on("connecting", function (e) {
           const ext = session.remote_identity.uri.user;
           statusCall("Llamando a: " + ext);
+          $("#btnRejectCall").show();
         });
         session.on("process", function (e) {
           statusCall("Procesando Llamada");
         });
         session.on("ended", function (e) {
           statusCall("Llamada Finalizada");
+
           completeSession();
         });
         session.on("failed", function (e) {
+          console.log("Event", e);
           statusCall("Llamada Fallida");
           $("#mobile-status-icon")
             .removeClass("fa-mobile-retro")
             .addClass("fa-phone-slash")
             .css("color", "red");
-          completeSession();
+          setTimeout(() => {
+            completeSession();
+          }, 1000);
         });
         session.on("accepted", function (e) {
           statusCall("Llamada Aceptada");
@@ -154,6 +163,7 @@ function updateUI() {
           if (session.isInProgress()) {
             if (session.direction === "incoming" && callTaked == false) {
               statusCall("¡Llamada entrante!");
+
               $("#incomingCallNumber").html(session.remote_identity.uri);
               //$("#incomingCall").show();
               $("#callControl").hide();
@@ -170,6 +180,7 @@ function updateUI() {
                 .addClass("fa-phone-volume")
                 .css("color", "green");
               $("#callInfoNumber").html(session.remote_identity.uri.user);
+
               $("#connectCall").hide();
               $("#btnRejectCall").hide();
               //$("#callStatus").show();
@@ -178,7 +189,7 @@ function updateUI() {
             statusCall("¡Llamada en progreso!");
 
             // Iniciar el temporizador
-            startTimer()
+            startTimer();
             $("#mobile-status-icon")
               .removeClass("fa-phone-slash")
               .addClass("fa-phone-volume")
@@ -192,7 +203,7 @@ function updateUI() {
             //$("#inCallButtons").show();
             $("#callerId").text(session.remote_identity.uri.user);
             $("#wrapCallerId").show();
-            $('#wrapTimerId').show()
+            $("#wrapTimerId").show();
             $("#optionsInCall").show();
             $("#info-micro").removeClass("align-left");
             incomingCallAudio.pause();
@@ -231,4 +242,146 @@ function updateUI() {
     $("#wrapper").hide();
     $("#wrapLogin").show();
   }
+}
+
+function loadCallHistory() {
+
+  loadCallHistoryInit = true
+
+  // Get existing call history from localStorage
+  let callHistory = getCallHistory();
+
+  if (Object.keys(callHistory).length === 0) {
+    const calltag = '<li class="list-group-item text-muted">El historial de llamadas está vacío</li>';
+    $("#call-history").html(calltag);
+  }else{
+    callHistory.forEach(function (call) {
+      addCall(call);
+    });
+  }
+
+ 
+}
+
+function formatDuration(seconds) {
+  var minutes = Math.floor(seconds / 60);
+  var remainingSeconds = seconds % 60;
+  var duration = "";
+  if (minutes > 0) {
+    duration += minutes + "m ";
+  }
+  duration += remainingSeconds + "s";
+  return duration;
+}
+
+function addCall(call) {
+  let message;
+  let icon;
+  let color;
+  if (call.type === "answer") {
+    message = "Recibiste una llamada";
+    icon = '<i class="fas fa-phone-alt"></i>';
+    color = "text-success";
+  } else if (call.type === "call") {
+    message = "Realizaste una llamada";
+    icon = '<i class="fas fa-phone"></i>';
+    color = "text-primary";
+  } else if (call.type === "hangup") {
+    message = "Colgaste una llamada";
+    icon = '<i class="fas fa-phone-slash"></i>';
+    color = "text-danger";
+  } else if (call.type === "reject") {
+    message = "Rechazaste una llamada";
+    icon = '<i class="fas fa-times-circle"></i>';
+    color = "text-warning";
+  } else {
+    message = "Intentaste hacer una llamada de audio (Request Terminated)";
+    icon = '<i class="fas fa-question-circle"></i>';
+    color = "text-muted";
+  }
+
+  // Obtener la hora de la llamada
+  let callTime;
+  if (call.timestamp instanceof Date && !isNaN(call.timestamp)) {
+    callTime = call.timestamp;
+  } else {
+    // Si no es válido, usar la fecha y hora actual
+    callTime = new Date();
+  }
+  let currentTime = new Date();
+  let formattedTime;
+  if (callTime.toDateString() === currentTime.toDateString()) {
+    formattedTime = callTime.toLocaleTimeString("en-US");
+  } else {
+    formattedTime =
+      "ayer a las " +
+      callTime.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+  }
+
+  var calltag =
+    '<li class="list-group-item call-item d-flex align-items-center">' +
+    '<span class="call-icon me-3 ' +
+    color +
+    '">' +
+    icon +
+    "</span>" +
+    '<span class="call-message flex-grow-1">' +
+    message;
+
+  // Agregar duración solo si no es una llamada rechazada
+  if (call.type !== "reject") {
+    calltag +=
+      '<span class="call-duration ms-2">y hablaste durante ' +
+      formatDuration(call.duration) +
+      "</span>";
+  }
+  // Agregar el usuario remoto
+  calltag +=
+    '<div><span class="call-user"><i class="fas fa-user me-1"></i>' +
+    call.user +
+    "</span></div>";
+
+  // Agregar la hora de la llamada
+  calltag +=
+    '<div><span class="call-time"><i class="fas fa-clock me-1"></i>' +
+    formattedTime +
+    "</span></div>";
+
+  calltag += "</span>" + "</li>";
+
+  $("#call-history").prepend(calltag);
+  
+  
+}
+
+function getCallHistory() {
+  return JSON.parse(localStorage.getItem("callHistory")) || [];
+}
+
+// Function to add a call to the call history
+function addToCallHistory(type) {
+  //type = 'answer','call,'hangup','reject'
+  // Create a call object with current timestamp
+  
+  let call = {
+    type: type,
+    duration: callDuration,
+    timestamp: new Date(),
+    icon: "",
+    user: userRemoteExtension
+  };
+  let callHistory = getCallHistory(); 
+  // Get existing call history from localStorage
+  console.log(callHistory)
+  callHistory.push(call);
+
+  // Verificar si el almacenamiento local está vacío
+if (localStorage.getItem("callHistory") === null) {
+  $("#call-history").html("")
+}
+  localStorage.setItem("callHistory", JSON.stringify(callHistory));
+  addCall(call);
 }

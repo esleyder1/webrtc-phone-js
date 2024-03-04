@@ -5,6 +5,7 @@ function completeSession() {
     sessions = [];
     incomingCallAudio.pause();
     $("#connectCall").attr("disabled", false);
+    $('#wrapOptions').show()
     $("#connectCall").show();
     $("#btnRejectCall").hide();
 
@@ -42,7 +43,11 @@ function completeSession() {
         .addClass("fa-mobile-retro");
     }, 2000);
 
-    stopTimer()
 
+    
+      addToCallHistory(stateCall);
+  
+  stateCall = null
+    stopTimer()
     updateUI();
   };

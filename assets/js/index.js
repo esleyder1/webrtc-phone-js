@@ -6,6 +6,7 @@ jQuery(function () {
   let userId = null;
   let timerInterval = null;
   let currentNotification = null;
+  stateCall = null
 
   /*Opciones de JSSIP*/
   let callOptions = {
@@ -137,23 +138,31 @@ jQuery(function () {
   });
 
   //Función para llamar a una extensión (botón llamar)
-  $("#connectCall").on("click", function () {
+  $("#connectCall").click(function () {
   
     const dest = $("#toField").val();
     //statusCall("Calling");
-    phone.call(dest, callOptions);
+    if(dest){
+      phone.call(dest, callOptions);
+    }
+
 
     $("#toField").val("");
     $(this).attr("disabled", true);
 
     // Reiniciar el contador de duración de la llamada
     callDuration = 0;
+    stateCall = 'call'
+
+
+
     updateUI();
     addStreams();
   });
 
   //Función para responder la llamada
   $("#btnAnswer").click(function () {
+    stateCall = 'answer'
     sessions.forEach((session) => {
       session.answer(callOptions);
       if (currentNotification) {
@@ -163,12 +172,16 @@ jQuery(function () {
         currentNotification = null; // Limpiar la referencia a la notificación
     }
       addStreams();
+
     });
   });
 
   //funcion para colgar la llamada
   $(".btnHangUp").click(function () {
-    sessions.forEach((session) => {
+    let type = $(this).data('type')
+    stateCall = stateCall || type
+    
+    sessions.forEach((session) => {      
       session.terminate();
     });
   });
@@ -291,55 +304,4 @@ jQuery(function () {
     phone.call(dest, callOptions);
   });
 
-
-  var callHistory = [
-    { type: "Video Entrante", duration: 20, time: "el miércoles pasado a las 15:05" },
-    { type: "Video Entrante", duration: 10, time: "el miércoles pasado a las 15:06" },
-    { type: "Audio Saliente", duration: 15, time: "el miércoles pasado a las 15:07" },
-    { type: "Llamada de Audio Fallida", time: "el miércoles pasado a las 15:07" },
-    { type: "Video Entrante", duration: 52, time: "el miércoles pasado a las 15:09" },
-    { type: "Llamada de Audio Fallida", time: "el miércoles pasado a las 15:44" },
-    { type: "Llamada de Audio Fallida", time: "el miércoles pasado a las 15:44" },
-    { type: "Video Entrante", duration: 16, time: "el miércoles pasado a las 15:44" },
-    { type: "Video Entrante", duration: 2, time: "el miércoles pasado a las 15:45" },
-    { type: "Llamada de Audio Fallida", time: "el miércoles pasado a las 15:45" },
-    { type: "Llamada de Audio Fallida", time: "el miércoles pasado a las 15:46" }
-];
-
-  // Función para formatear la duración de la llamada
-  function formatDuration(seconds) {
-    var minutes = Math.floor(seconds / 60);
-    var remainingSeconds = seconds % 60;
-    return minutes + "m " + remainingSeconds + "s";
-  }
-
-  // Función para agregar elementos al historial de llamadas
-  function addCall(type, duration, time) {
-    var icon, color;
-    if (type.startsWith("Incoming")) {
-      icon = '<i class="fas fa-arrow-down"></i>';
-      color = "text-success";
-    } else if (type.startsWith("Outgoing")) {
-      icon = '<i class="fas fa-arrow-up"></i>';
-      color = "text-danger";
-    } else {
-      icon = '<i class="fas fa-times"></i>';
-      color = "text-warning";
-    }
-    var call = '<li class="list-group-item call-item">' + 
-                  '<span class="call-type ' + color + '">' + icon + '</span>' + 
-                  '<span class="call-number">' + type + '</span>' +
-                  '<span class="float-right call-time">' + formatDuration(duration) + ' - ' + time + '</span>' +
-              '</li>';
-    document.getElementById("call-history").innerHTML += call;
-  }
-
-  // Agregar llamadas al historial
-  callHistory.forEach(function(call) {
-    if (call.duration !== undefined) {
-      addCall(call.type, call.duration, call.time);
-    } else {
-      addCall(call.type, 0, call.time);
-    }
-  });
 });

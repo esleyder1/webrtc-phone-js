@@ -540,3 +540,6 @@ left:unset;
   font-size: 12px;
   display: block;
 }
+span.call-message {
+  font-size: 14px;
+}

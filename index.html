@@ -117,9 +117,9 @@
                                                 <li><a class="dropdown-item" href="#" id="btnRefresh"><i
                                                             class="fa-solid fa-sync"></i>
                                                         <span>Refrescar registro</span></a></li>
-                                                <li><a class="dropdown-item" href="#" data-bs-toggle="offcanvas"
+                                                <li><a class="dropdown-item" href="#" id="btnOpenHistory" data-bs-toggle="offcanvas"
                                                     data-bs-target="#offcanvasCallHistory"><i
-                                                    class="fa-solid fa-right-from-bracket"></i>
+                                                    class="fa-solid fa-clock-rotate-left"></i>
                                                 <span>Historial de llamadas</span></a></li>
                                                <!--  <li><a class="dropdown-item" href="#" id="btnLogout"><i
                                                     class="fa-solid fa-right-from-bracket"></i>
@@ -189,7 +189,7 @@
                                                 </button>
                                             </div>
                                             <div class="col text-right">
-                                                <button class="btn btn-danger btn-sm btnHangUp">
+                                                <button class="btn btn-danger btn-sm btnHangUp" data-type='reject'>
                                                     <i class="fa fa-phone hangup-call"></i> <span>Rechazar</span>
                                                 </button>
                                             </div>
@@ -202,7 +202,7 @@
                                     <button id="connectCall" class="btn btn-primary call-button btn-round">
                                         <span><i class="fa fa-phone"></i></span>
                                     </button>
-                                    <button id="btnRejectCall" class="btn btn-danger call-button btn-round btnHangUp">
+                                    <button id="btnRejectCall" class="btn btn-danger call-button btn-round btnHangUp" data-type='hangup'>
                                         <span><i class="fa fa-phone hangup-call"></i></span>
                                     </button>
                                 </div>
