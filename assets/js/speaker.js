@@ -22,7 +22,7 @@
       if (average > 0) {
         const levelElement = $("#speaker-level");
         const maxHeight = $(".sound-meter").height();
-        const height = Math.min(maxHeight, (average * maxHeight) / 100); // Calcula la altura normalmente
+        const height = Math.min(maxHeight, (average * maxHeight) / 50); // Calcula la altura normalmente
         levelElement.css("height", height + "px");
         levelElement.css("bottom", "0");
       }

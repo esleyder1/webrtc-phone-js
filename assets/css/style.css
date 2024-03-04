@@ -125,7 +125,7 @@ span.input-group-btn {
 }
 
 .wrapInputCall input {
-  width: 85%;
+  width: 100%;
 }
 
 button#btnDeleteDial {
@@ -160,6 +160,17 @@ button#btnDeleteDial i {
   -ms-user-select: none;
   user-select: none;
 }
+.dialpad-char.btn-secondary-phone {
+  background: #eeeded;
+  color: #605e5e;
+}
+
+#dialPad div.btn-secondary-phone:hover {
+  background-color: #989b9f;
+  color: #fff;
+  cursor: pointer;
+  cursor: hand;
+}
 
 .callInfo h3 {
   color: #389400;
@@ -183,7 +194,7 @@ div#connectCall span {
 
 #dialPad {
   width: 210px;
-  height: 204px;
+  height: 226px;
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
@@ -191,11 +202,11 @@ div#connectCall span {
 }
 
 #dialPad div {
-  width: 48px;
+  width: 55px;
   height: 42px;
   text-align: center;
   font-size: 20px;
-  margin: 5px 10px 0px 10px;
+  margin: 5px 5px 0px 5px;
   box-sizing: border-box;
   border-radius: 7px;
   border: 1px solid #e8e8e8;
@@ -217,7 +228,7 @@ div#connectCall span {
 
 div#wrapOptions {
   text-align: center;
-  margin: 8px 0em 0em 0em;
+  margin: 16px 0em 0em 0em;
 }
 
 button#connectCall,

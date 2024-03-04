@@ -94,7 +94,6 @@ function connectToWS(configuration) {
         });
         session.on("ended", function (e) {
           statusCall("Llamada Finalizada");
-          alert(e.cause)
           causeCall = e.cause
           completeSession();
         });

@@ -6,7 +6,7 @@ jQuery(function () {
   let userId = null;
   let timerInterval = null;
   let currentNotification = null;
-  stateCall = null
+  stateCall = null;
 
   /*Opciones de JSSIP*/
   let callOptions = {
@@ -29,7 +29,6 @@ jQuery(function () {
   $("#transferPopover").click(function () {
     $("#btnHoldUnhold").click();
   });
-
 
   if (storedServer && storedUsername && storedPassword) {
     login(storedServer, storedUsername, storedPassword);
@@ -83,42 +82,64 @@ jQuery(function () {
     if ($(this).hasClass("dialpad-char")) {
       let digit = $(this).attr("data-value");
 
-      if (digit == "#") {
-        digit = "pound";
-      }
-      if (digit == "*") {
-        digit = "star";
-      }
-      if (audioFiles[digit]) {
-        if (lastPlayedAudio) {
-          // Detiene la reproducción del archivo de audio anterior si aún está reproduciéndose
-          lastPlayedAudio.pause();
-          lastPlayedAudio.currentTime = 0;
+      if (digit === "C") {
+        const toField = $("#toField");
+        toField.val("");
+        if (toField.val() === "") {
+          $("#wrapOptions").hide();
         }
-        audioFiles[digit].play();
-        lastPlayedAudio = audioFiles[digit]; // Actualiza el último archivo de audio reproducido
-      } else {
-        console.error(
-          "El archivo de audio para el dígito " + digit + " no está disponible."
-        );
       }
-
-      if (digit == "pound") {
-        digit = "#";
-      }
-      if (digit == "star") {
-        digit = "*";
-      }
-
-      $("#wrapOptions").show();
-      $("#toField").val($("#toField").val() + digit);
-      $("#connectCall").attr("disabled", false);
-
-      sessions.forEach((session) => {
-        if (session.isEstablished()) {
-          session.sendDTMF(digit);
+      else if (digit === "R") {
+        const dest = localStorage.getItem("latestCall")
+        //statusCall("Calling");
+        if (dest) {
+          phone.call(dest, callOptions);
         }
-      });
+        // Reiniciar el contador de duración de la llamada
+        callDuration = 0;
+        stateCall = "call";
+        
+        updateUI();
+        addStreams();
+      }else{
+        if (digit == "#") {
+          digit = "pound";
+        }
+        if (digit == "*") {
+          digit = "star";
+        }
+        if (audioFiles[digit]) {
+          if (lastPlayedAudio) {
+            // Detiene la reproducción del archivo de audio anterior si aún está reproduciéndose
+            lastPlayedAudio.pause();
+            lastPlayedAudio.currentTime = 0;
+          }
+          audioFiles[digit].play();
+          lastPlayedAudio = audioFiles[digit]; // Actualiza el último archivo de audio reproducido
+        } else {
+          console.error(
+            "El archivo de audio para el dígito " +
+              digit +
+              " no está disponible."
+          );
+        }
+
+        if (digit == "pound") {
+          digit = "#";
+        }
+        if (digit == "star") {
+          digit = "*";
+        }
+
+        $("#wrapOptions").show();
+        $("#toField").val($("#toField").val() + digit);
+        $("#connectCall").attr("disabled", false);
+        sessions.forEach((session) => {
+          if (session.isEstablished()) {
+            session.sendDTMF(digit);
+          }
+        });
+      }
     }
   });
 
@@ -131,7 +152,7 @@ jQuery(function () {
   //Función para borrar un número del telefono que se quiere llamar.
   $("#btnDeleteDial").on("click", function () {
     const toField = $("#toField");
-    toField.val(toField.val().slice(0, -1));
+    toField.val("");
     if (toField.val() === "") {
       $("#wrapOptions").hide();
     }
@@ -139,22 +160,19 @@ jQuery(function () {
 
   //Función para llamar a una extensión (botón llamar)
   $("#connectCall").click(function () {
-  
     const dest = $("#toField").val();
     //statusCall("Calling");
-    if(dest){
+    if (dest) {
       phone.call(dest, callOptions);
+      localStorage.setItem("latestCall", dest)
     }
-
 
     $("#toField").val("");
     $(this).attr("disabled", true);
 
     // Reiniciar el contador de duración de la llamada
     callDuration = 0;
-    stateCall = 'call'
-
-
+    stateCall = "call";
 
     updateUI();
     addStreams();
@@ -162,26 +180,25 @@ jQuery(function () {
 
   //Función para responder la llamada
   $("#btnAnswer").click(function () {
-    stateCall = 'answer'
+    stateCall = "answer";
     sessions.forEach((session) => {
       session.answer(callOptions);
       if (currentNotification) {
         // Cerrar la notificación actual
         currentNotification.close();
-        alert("Notificación closed")
+        alert("Notificación closed");
         currentNotification = null; // Limpiar la referencia a la notificación
-    }
+      }
       addStreams();
-
     });
   });
 
   //funcion para colgar la llamada
   $(".btnHangUp").click(function () {
-    let type = $(this).data('type')
-    stateCall = stateCall || type
-    
-    sessions.forEach((session) => {      
+    let type = $(this).data("type");
+    stateCall = stateCall || type;
+
+    sessions.forEach((session) => {
       session.terminate();
     });
   });
@@ -208,7 +225,6 @@ jQuery(function () {
           .removeClass("fa-microphone")
           .addClass("fa-microphone-slash");
         $(this).removeClass("btn-light").addClass("btn-success");
-        
       }
     });
     updateUI();
@@ -303,5 +319,4 @@ jQuery(function () {
     const dest = $("#inputExtToConference").val();
     phone.call(dest, callOptions);
   });
-
 });

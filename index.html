@@ -85,23 +85,6 @@
             </div>
             <div id="wrapper" class="col-md-4 col-sm-12 justify-content-evenly">
                 <div class="wrap">
-                    <div id="inCallButtons" style="display: none">
-                        <div id="dialPad">
-                            <div class="dialpad-char" data-value="1" unselectable="on">1</div>
-                            <div class="dialpad-char" data-value="2" unselectable="on">2</div>
-                            <div class="dialpad-char" data-value="3" unselectable="on">3</div>
-                            <div class="dialpad-char" data-value="4" unselectable="on">4</div>
-                            <div class="dialpad-char" data-value="5" unselectable="on">5</div>
-                            <div class="dialpad-char" data-value="6" unselectable="on">6</div>
-                            <div class="dialpad-char" data-value="7" unselectable="on">7</div>
-                            <div class="dialpad-char" data-value="8" unselectable="on">8</div>
-                            <div class="dialpad-char" data-value="9" unselectable="on">9</div>
-                            <div class="dialpad-char" data-value="*" unselectable="on">*</div>
-                            <div class="dialpad-char" data-value="0" unselectable="on">0</div>
-                            <div class="dialpad-char" data-value="#" unselectable="on">#</div>
-                        </div>
-
-                    </div>
                     <div id="callControl">
                         <div class="card">
                             <div class="card-header headerPhone">
@@ -149,10 +132,10 @@
                                 <div id="to">
                                     <div class="wrapInputCall">
                                         <input id="toField" type="text" placeholder="" />
-                                        <span class="input-group-btn">
+                                        <!-- <span class="input-group-btn">
                                             <button id="btnDeleteDial" class="btn btn-default"><i
                                                     class="fa-solid fa-circle-chevron-left"></i></button>
-                                        </span>
+                                        </span> -->
                                     </div>
                                     <div id="toCallButtons">
                                         <div id="dialPad">
@@ -168,6 +151,9 @@
                                             <div class="dialpad-char" data-value="*" unselectable="on">*</div>
                                             <div class="dialpad-char" data-value="0" unselectable="on">0</div>
                                             <div class="dialpad-char" data-value="#" unselectable="on">#</div>
+                                            <div class="dialpad-char btn-secondary-phone" data-value="R" unselectable="on">R</div>
+                                            <div class="dialpad-char" data-value="+" unselectable="on">+</div>
+                                            <div class="dialpad-char btn-secondary-phone" data-value="C" unselectable="on">C</div>
                                         </div>
                                     </div>
                                 </div>
@@ -214,11 +200,11 @@
                                     <div class="row">
                                         <div class="col align-self-center">
                                             <div id="info-micro" class="align-left" style="display: none;">
-                                                <span class="meter-icon"><i class="fa-solid fa-microphone"></i></span>
+                                                <span class="meter-icon"><i class="fa-solid fa-headset"></i></span>
                                                 <div class="meter">
                                                     <span id="mic-level" class="level"></span>
                                                 </div>
-                                                <span class="meter-icon"><i class="fa-solid fa-volume-high"></i></span>
+                                                <span class="meter-icon"><i class="fa-solid fa-microphone"></i></span>
                                                 <div class="sound-meter">
                                                     <span id="speaker-level" class="level"></span>
                                                 </div>

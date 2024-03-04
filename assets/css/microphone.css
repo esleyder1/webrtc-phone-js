@@ -33,3 +33,6 @@ span.meter-icon i {
   width: 0; /* Inicialmente la barra está vacía */
   transition: width 0.1s ease-in-out; /* Animación suave de la barra */
 }
+div#info-micro .meter {
+  margin-right: 8px;
+}
