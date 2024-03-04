@@ -3,6 +3,7 @@ let isDND = false;
 let isAA = false;
 let userRemoteExtension = null;
 let loadCallHistoryInit = false;
+let causeCall = null
 
 function statusCall(status) {
   $("#statusCall").html(status);
@@ -93,11 +94,13 @@ function connectToWS(configuration) {
         });
         session.on("ended", function (e) {
           statusCall("Llamada Finalizada");
-
+          alert(e.cause)
+          causeCall = e.cause
           completeSession();
         });
         session.on("failed", function (e) {
-          console.log("Event", e);
+          console.log(e)
+          causeCall = e.cause
           statusCall("Llamada Fallida");
           $("#mobile-status-icon")
             .removeClass("fa-mobile-retro")
@@ -275,6 +278,7 @@ function formatDuration(seconds) {
 }
 
 function addCall(call) {
+  console.log("CAUSE=>",call.cause, call.type)
   let message;
   let icon;
   let color;
@@ -282,7 +286,7 @@ function addCall(call) {
     message = "Recibiste una llamada";
     icon = '<i class="fas fa-phone-alt"></i>';
     color = "text-success";
-  } else if (call.type === "call") {
+  } else if (call.type === "call" && call.cause === "Terminated") {
     message = "Realizaste una llamada";
     icon = '<i class="fas fa-phone"></i>';
     color = "text-primary";
@@ -294,10 +298,26 @@ function addCall(call) {
     message = "Rechazaste una llamada";
     icon = '<i class="fas fa-times-circle"></i>';
     color = "text-warning";
-  } else {
-    message = "Intentaste hacer una llamada de audio (Request Terminated)";
-    icon = '<i class="fas fa-question-circle"></i>';
-    color = "text-muted";
+  } 
+  if(call.cause === "Not Found") {
+    message = "Realizaste una llamada y no fue encontrado";
+    icon = '<i class="fas fa-phone-slash"></i>';
+    color = "text-danger";
+  }
+  if(call.cause === "Busy") {
+    message = "Realizaste una llamada y estaba ocupado";
+    icon = '<i class="fas fa-phone-slash"></i>';
+    color = "text-danger";
+  }
+  if(call.cause === "No Answer") {
+    message = "Perdiste una llamada";
+    icon = '<i class="fas fa-phone-slash"></i>';
+    color = "text-danger";
+  }
+  if(call.cause === "Canceled") {
+    message = "Llamada entrante, cancelada por el usuario";
+    icon = '<i class="fas fa-phone-slash"></i>';
+    color = "text-danger";
   }
 
   // Obtener la hora de la llamada
@@ -332,9 +352,10 @@ function addCall(call) {
     message;
 
   // Agregar duración solo si no es una llamada rechazada
-  if (call.type !== "reject") {
+  console.log(call.type,causeCall)
+  if (call.type !== "reject" &&  call.cause === 'Terminated') {
     calltag +=
-      '<span class="call-duration ms-2">y hablaste durante ' +
+      '<span class="call-duration ms-1">y hablaste durante ' +
       formatDuration(call.duration) +
       "</span>";
   }
@@ -353,7 +374,7 @@ function addCall(call) {
   calltag += "</span>" + "</li>";
 
   $("#call-history").prepend(calltag);
-  
+  causeCall = null
   
 }
 
@@ -371,7 +392,8 @@ function addToCallHistory(type) {
     duration: callDuration,
     timestamp: new Date(),
     icon: "",
-    user: userRemoteExtension
+    user: userRemoteExtension,
+    cause: causeCall
   };
   let callHistory = getCallHistory(); 
   // Get existing call history from localStorage
