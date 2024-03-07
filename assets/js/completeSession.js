@@ -33,7 +33,7 @@ function completeSession() {
     //mostrar teclado, ocultar vista de contestar llamada
     $("#to").show();
     $("#incomming").hide();
-    $('#info-micro').hide()
+    $('#info-micro').hide() 
 
     setTimeout(function () {
       statusCall("En linea");

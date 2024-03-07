@@ -8,10 +8,50 @@ let causeCall = null
 function statusCall(status) {
   $("#statusCall").html(status);
 }
-function addExtension(extension) {
-  $("#listExtension").append(
-    '<li class="list-group-item">' + extension + "</li>"
-  );
+function addExtension(name,extension) {
+  var listItem = $("<div>").addClass("list-group-item list-group-item-action flex-column align-items-start call-list-item");
+
+  // Contenido del elemento de lista
+  var content = $("<div>").addClass("d-flex w-100 justify-content-between");
+
+  // Nombre y extensión
+  var nameExtension = $("<div>").addClass("name-extension");
+
+  nameExtension.append($("<span>").addClass("extension").attr("data-extension", extension).text("Extensión: " + extension));
+  content.append(nameExtension);
+
+  // Botón de colgar con icono de Font Awesome
+  var hangUpBtn = $("<button>").addClass("hang-up-btn btn btn-danger").html('<i class="fa fa-phone hangup-call"></i>');
+
+  // Agregar evento click al botón para la funcionalidad de colgar
+  hangUpBtn.click(function() {
+    // Aquí puedes agregar la lógica para colgar la llamada
+    console.log("Colgar llamada de ",sessions);
+    var foundSession = sessions.find(function(session) {
+      return session.remote_identity.uri.user === extension;
+    });
+
+    if (foundSession) {
+        foundSession.terminate();
+        var listItem = $("#listExtension").find("[data-extension='" + extension + "']").closest(".list-group-item");
+        listItem.remove();
+    } else {
+        console.log("No session found for extension: " + extension);
+    }
+    
+    /* sessions.forEach((session) => {
+      session.terminate();
+    }); */
+  });
+  content.append(hangUpBtn);
+
+  // Agregar contenido al elemento de lista
+  listItem.append(content);
+
+
+  // Agregar el elemento de lista al contenedor
+  $("#listExtension").append(listItem);
+
 }
 // Función para conectar con el WebSocket
 function connectToWS(configuration) {
@@ -64,7 +104,7 @@ function connectToWS(configuration) {
         statusCall("Llamada saliente");
       } else {
         statusCall("Llamada entrante");
-
+        console.log("ev",ev)
         document.title = "¡Llamada entrante!";
         const favicon = document.querySelector("link[rel='icon']");
         favicon.href = "assets/images/incomming-call.png";
@@ -98,7 +138,7 @@ function connectToWS(configuration) {
           completeSession();
         });
         session.on("failed", function (e) {
-          console.log(e)
+
           causeCall = e.cause
           statusCall("Llamada Fallida");
           $("#mobile-status-icon")
@@ -122,7 +162,7 @@ function connectToWS(configuration) {
 
           statusCall("number of remote streams: " + remoteStreams.length);
           updateUI();
-          addExtension(session.remote_identity.uri.user);
+          addExtension("Name",session.remote_identity.uri.user);
         });
         session.on("newInfo", function (data) {
           const customHeader = data.request.getHeader("X-MyCustom-Message");
@@ -130,6 +170,10 @@ function connectToWS(configuration) {
 
         //Llamada entrante.
         if (session.direction === "incoming") {
+          currentNotification = notify(
+            "!Alerta!",
+            "LLamada entrante de: " + ev.session.remote_identity.uri.user
+          );
           //si isDND es true, no entran llamada, estária en modo no molestar
           if (isDND) {
             session.terminate({
@@ -277,7 +321,6 @@ function formatDuration(seconds) {
 }
 
 function addCall(call) {
-  console.log("CAUSE=>",call.cause, call.type)
   let message;
   let icon;
   let color;
@@ -313,8 +356,13 @@ function addCall(call) {
     icon = '<i class="fas fa-phone-slash"></i>';
     color = "text-danger";
   }
-  if(call.cause === "Canceled") {
+  if(call.cause === "Canceled" && call.type === "answer") {
     message = "Llamada entrante, cancelada por el usuario";
+    icon = '<i class="fas fa-phone-slash"></i>';
+    color = "text-danger";
+  }
+  if(call.cause === "Canceled" && call.type === "call") {
+    message = "Llamada saliente, cancelada por el agente";
     icon = '<i class="fas fa-phone-slash"></i>';
     color = "text-danger";
   }
@@ -372,7 +420,9 @@ function addCall(call) {
 
   calltag += "</span>" + "</li>";
 
+  if(message !== undefined) {
   $("#call-history").prepend(calltag);
+  }
   causeCall = null
   
 }
@@ -396,7 +446,6 @@ function addToCallHistory(type) {
   };
   let callHistory = getCallHistory(); 
   // Get existing call history from localStorage
-  console.log(callHistory)
   callHistory.push(call);
 
   // Verificar si el almacenamiento local está vacío

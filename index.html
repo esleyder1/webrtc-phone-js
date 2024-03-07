@@ -100,11 +100,17 @@
                                                 <li><a class="dropdown-item" href="#" id="btnRefresh"><i
                                                             class="fa-solid fa-sync"></i>
                                                         <span>Refrescar registro</span></a></li>
-                                                <li><a class="dropdown-item" href="#" id="btnOpenHistory" data-bs-toggle="offcanvas"
-                                                    data-bs-target="#offcanvasCallHistory"><i
-                                                    class="fa-solid fa-clock-rotate-left"></i>
-                                                <span>Historial de llamadas</span></a></li>
-                                               <!--  <li><a class="dropdown-item" href="#" id="btnLogout"><i
+                                                <li><a class="dropdown-item" href="#" id="btnOpenHistory"
+                                                        data-bs-toggle="offcanvas"
+                                                        data-bs-target="#offcanvasCallHistory"><i
+                                                            class="fa-solid fa-clock-rotate-left"></i>
+                                                        <span>Historial de llamadas</span></a></li>
+                                                <li><a class="dropdown-item" href="#offcanvasPreview"
+                                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvasPreview"
+                                                        role="button" aria-controls="offcanvasPreview"><i
+                                                            class="fa-solid fa-play-circle"></i>
+                                                        <span>Previsualizar Audio</span></a></li>
+                                                <!--  <li><a class="dropdown-item" href="#" id="btnLogout"><i
                                                     class="fa-solid fa-right-from-bracket"></i>
                                                 <span>Cerrar sesión</span></a></li> -->
                                             </ul>
@@ -120,9 +126,9 @@
                                         class="small text">Usuario</span>
                                 </div>
                                 <div class="info-status" id="wrapTimerId" style="display: none"><i
-                                    class="fa-solid fa-clock" id="mobile-time-icon"></i> <span id="timerId"
-                                    class="small text">00:00</span>
-                            </div>
+                                        class="fa-solid fa-clock" id="mobile-time-icon"></i> <span id="timerId"
+                                        class="small text">00:00</span>
+                                </div>
 
 
                             </div>
@@ -151,9 +157,11 @@
                                             <div class="dialpad-char" data-value="*" unselectable="on">*</div>
                                             <div class="dialpad-char" data-value="0" unselectable="on">0</div>
                                             <div class="dialpad-char" data-value="#" unselectable="on">#</div>
-                                            <div class="dialpad-char btn-secondary-phone" data-value="R" unselectable="on">R</div>
+                                            <div class="dialpad-char btn-secondary-phone" data-value="R"
+                                                unselectable="on">R</div>
                                             <div class="dialpad-char" data-value="+" unselectable="on">+</div>
-                                            <div class="dialpad-char btn-secondary-phone" data-value="C" unselectable="on">C</div>
+                                            <div class="dialpad-char btn-secondary-phone" data-value="C"
+                                                unselectable="on">C</div>
                                         </div>
                                     </div>
                                 </div>
@@ -188,7 +196,8 @@
                                     <button id="connectCall" class="btn btn-primary call-button btn-round">
                                         <span><i class="fa fa-phone"></i></span>
                                     </button>
-                                    <button id="btnRejectCall" class="btn btn-danger call-button btn-round btnHangUp" data-type='hangup'>
+                                    <button id="btnRejectCall" class="btn btn-danger call-button btn-round btnHangUp"
+                                        data-type='hangup'>
                                         <span><i class="fa fa-phone hangup-call"></i></span>
                                     </button>
                                 </div>
@@ -282,32 +291,97 @@
 
     <!--OFFCANVAS CALL HISTORY-->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasCallHistory"
-    aria-labelledby="offcanvasCallHistoryLabel">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasCallHistoryLabel">Historial de Llamadas
+        aria-labelledby="offcanvasCallHistoryLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasCallHistoryLabel">Historial de Llamadas
 
 
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="call-list">
+                <ul id="call-history" class="list-group">
+                    <!-- Las llamadas se agregarán dinámicamente aquí -->
+                </ul>
+            </div>
+        </div>
     </div>
-    <div class="offcanvas-body">
-        <div class="call-list">
-            <ul id="call-history" class="list-group">
-              <!-- Las llamadas se agregarán dinámicamente aquí -->
-            </ul>
-          </div>
-    </div>
-</div>
 
+    <!--OFFCANVAS PREVIEW-->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasPreview" aria-labelledby="offcanvasPreviewLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasPreviewLabel">Previsualizar dispositivos
+
+
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div id="options-view" class="mt-5">
+                <div class="row mb-3">
+                    <div class="col-sm-12">
+                        <label for="playbackSrc">Altavoz:</label>
+                    </div>
+                    <div class="col-sm-12">
+                        <select id="playbackSrc" class="form-select form-control"></select>
+                        <div class="volume-bar mt-2">
+                            <i class="fas fa-volume-up"></i>
+                            <div class="volume-indicator"></div>
+                        </div>
+                        <button class="btn btn-primary mt-2">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-12">
+                        <label for="ringDevice">Dispositivo de timbrado:</label>
+                    </div>
+                    <div class="col-sm-12">
+                        <select id="ringDevice" class="form-select form-control"></select>
+                        <div class="volume-bar mt-2">
+                            <i class="fas fa-volume-up"></i>
+                            <div class="volume-indicator"></div>
+                        </div>
+                        <button class="btn btn-primary mt-2">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-12">
+                        <label for="microphoneSrc">Micrófono:</label>
+                    </div>
+                    <div class="col-sm-12">
+                        <select id="microphoneSrc" class="form-select form-control"></select>
+                        <div class="volume-bar mt-2">
+                            <i class="fas fa-microphone"></i>
+                            <div class="volume-indicator"></div>
+                        </div>
+                        <button class="btn btn-primary mt-2">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Otras opciones aquí -->
+            </div>
+        </div>
+    </div>
+
+
+
+    <audio id="combinedAudioRecording" controls></audio>
     </div>
     <script src="assets/js/libs/jquery.min.js"></script>
     <script src="assets/js/libs/popper.min.js"></script>
     <script src="assets/js/libs/bootstrap.min.js"></script>
     <script src="assets/js/libs/loglevel.min.js"></script>
-    <script src="assets/js/libs/jssip-3.10.0.min.js"></script>
 
+    <script src="assets/js/libs/jssip-3.10.0.min.js"></script>
+    <script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
     <script src="assets/js/microphone.js"></script>
-    
+
     <script src="assets/js/callDuration.js"></script>
     <script src="assets/js/loadAudioFiles.js"></script>
     <script src="assets/js/notificationApi.js"></script>

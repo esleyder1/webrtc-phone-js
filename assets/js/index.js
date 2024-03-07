@@ -1,4 +1,5 @@
 jQuery(function () {
+  JsSIP.debug.disable("JsSIP:*");
   let configuration = null;
   let session = null;
 
@@ -88,9 +89,8 @@ jQuery(function () {
         if (toField.val() === "") {
           $("#wrapOptions").hide();
         }
-      }
-      else if (digit === "R") {
-        const dest = localStorage.getItem("latestCall")
+      } else if (digit === "R") {
+        const dest = localStorage.getItem("latestCall");
         //statusCall("Calling");
         if (dest) {
           phone.call(dest, callOptions);
@@ -98,10 +98,10 @@ jQuery(function () {
         // Reiniciar el contador de duración de la llamada
         callDuration = 0;
         stateCall = "call";
-        
+
         updateUI();
         addStreams();
-      }else{
+      } else {
         if (digit == "#") {
           digit = "pound";
         }
@@ -162,9 +162,14 @@ jQuery(function () {
   $("#connectCall").click(function () {
     const dest = $("#toField").val();
     //statusCall("Calling");
-    if (dest) {
+    const identificator = localStorage.getItem("sipUsername");
+    if (dest !== "" && dest !== identificator) {
       phone.call(dest, callOptions);
-      localStorage.setItem("latestCall", dest)
+      localStorage.setItem("latestCall", dest);
+    }
+    let latestCall = localStorage.getItem("latestCall")
+    if(dest === identificator){
+      alert("No puedes realizar una llamada a tu propio identificador.");
     }
 
     $("#toField").val("");
@@ -258,8 +263,10 @@ jQuery(function () {
     const ext = $("#inputExtToTransfer").val();
     sessions.forEach((session) => {
       if (type == "blind") {
+        //ciega
         session.refer(ext);
       } else {
+        //atendida
         session.refer("sip:" + ext + "@" + storedServer, {
           referredBy: "sip:" + sipUsername + "@" + storedServer,
         });
@@ -317,6 +324,35 @@ jQuery(function () {
 
   $("#btnAddToConference").click(function () {
     const dest = $("#inputExtToConference").val();
-    phone.call(dest, callOptions);
+    const identificator = localStorage.getItem("sipUsername");
+    if (dest && dest !== identificator) {
+      phone.call(dest, callOptions);
+    } else {
+      alert("No puedes realizar una llamada a tu propio identificador.");
+    }
+    $("#inputExtToConference").val("")
   });
+
+  navigator.mediaDevices.enumerateDevices()
+    .then(function(devices) {
+        // Filtrar los dispositivos de audio
+        var audioDevices = devices.filter(function(device) {
+            return device.kind === 'audioinput'; // Dispositivos de entrada de audio (micrófonos)
+        });
+
+        // Llenar los selectores con los dispositivos encontrados
+        audioDevices.forEach(function(device) {
+            $('#playbackSrc, #ringDevice, #microphoneSrc').append('<option value="' + device.deviceId + '">' + device.label + '</option>');
+        });
+    })
+    .catch(function(err) {
+        console.error('Error al enumerar dispositivos de audio: ' + err);
+    });
+
+    // Manejar el cambio de dispositivo seleccionado (opcional)
+    $('#playbackSrc, #ringDevice, #microphoneSrc').change(function() {
+        var selectedDeviceId = $(this).val();
+        console.log('Dispositivo seleccionado:', selectedDeviceId);
+        // Aquí puedes realizar acciones adicionales, como actualizar la configuración de audio
+    });
 });
