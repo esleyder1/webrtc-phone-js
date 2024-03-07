@@ -104,7 +104,6 @@ function connectToWS(configuration) {
         statusCall("Llamada saliente");
       } else {
         statusCall("Llamada entrante");
-        console.log("ev",ev)
         document.title = "¡Llamada entrante!";
         const favicon = document.querySelector("link[rel='icon']");
         favicon.href = "assets/images/incomming-call.png";
@@ -399,7 +398,6 @@ function addCall(call) {
     message;
 
   // Agregar duración solo si no es una llamada rechazada
-  console.log(call.type,causeCall)
   if (call.type !== "reject" &&  call.cause === 'Terminated') {
     calltag +=
       '<span class="call-duration ms-1">y hablaste durante ' +

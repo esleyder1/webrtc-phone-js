@@ -25,19 +25,22 @@ jQuery(function () {
         }
         const average = total / bufferLength;
 
-        // Ajusta la altura del nivel de decibelios
-        const levelElement = $('#mic-level');
-        const maxHeight = $('.meter').height();
-        const height = Math.min(maxHeight, average * maxHeight / 100); // Calcula la altura normalmente
-        levelElement.css('height', height + 'px');
-        levelElement.css('bottom', '0');
+        // Ajusta la anchura del nivel de decibelios
+        const levelElement = $('#mic-level-preview');
+        const maxWidth = $('.meter-micro-preview').width();
+        const width = Math.min(maxWidth, average * maxWidth / 100); // Calcula la anchura normalmente
+        const leftOffset = Math.max(0, maxWidth - width); // Calcula el desplazamiento a la izquierda
+        
+        levelElement.css('width', width + 'px');
+        levelElement.css('rigth', leftOffset + 'px');
+
 
         // Llama recursivamente para continuar el análisis en tiempo real
         requestAnimationFrame(analyzeAudio);
       }
 
       // Iniciar el análisis de audio en tiempo real
-      //analyzeAudio();
+      analyzeAudio();
     })
     .catch(function(err) {
       console.error('Error al acceder al micrófono:', err);

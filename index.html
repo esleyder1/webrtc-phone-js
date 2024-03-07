@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="assets/css/libs/font-awesome-6.min.css">
     <link rel="stylesheet" href="assets/css/style.css" type="text/css">
     <link rel="stylesheet" href="assets/css/microphone.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/preview.css" type="text/css">
     <link rel="stylesheet" href="assets/css/incomming.css" type="text/css">
     <title>WebRTC - Phone</title>
 </head>
@@ -318,18 +319,18 @@
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-            <div id="options-view" class="mt-5">
+            <div id="options-view" >
                 <div class="row mb-3">
                     <div class="col-sm-12">
                         <label for="playbackSrc">Altavoz:</label>
                     </div>
                     <div class="col-sm-12">
                         <select id="playbackSrc" class="form-select form-control"></select>
-                        <div class="volume-bar mt-2">
-                            <i class="fas fa-volume-up"></i>
-                            <div class="volume-indicator"></div>
+                     
+                        <div class="meter-speaker-preview">
+                            <span id="speaker-level-preview" class="level-prev"></span>
                         </div>
-                        <button class="btn btn-primary mt-2">
+                        <button class="btn btn-primary mt-2" id="playButton">
                             <i class="fas fa-play"></i>
                         </button>
                     </div>
@@ -340,9 +341,10 @@
                     </div>
                     <div class="col-sm-12">
                         <select id="ringDevice" class="form-select form-control"></select>
-                        <div class="volume-bar mt-2">
-                            <i class="fas fa-volume-up"></i>
-                            <div class="volume-indicator"></div>
+                        <div class="volume-indicator">
+                            <div class="meter-ring-preview">
+                                <span id="ring-level-preview" class="level-prev"></span>
+                            </div>
                         </div>
                         <button class="btn btn-primary mt-2">
                             <i class="fas fa-play"></i>
@@ -355,13 +357,9 @@
                     </div>
                     <div class="col-sm-12">
                         <select id="microphoneSrc" class="form-select form-control"></select>
-                        <div class="volume-bar mt-2">
-                            <i class="fas fa-microphone"></i>
-                            <div class="volume-indicator"></div>
+                        <div class="meter-micro-preview">
+                            <span id="mic-level-preview" class="level-prev"></span>
                         </div>
-                        <button class="btn btn-primary mt-2">
-                            <i class="fas fa-play"></i>
-                        </button>
                     </div>
                 </div>
                 <!-- Otras opciones aquí -->
@@ -369,9 +367,6 @@
         </div>
     </div>
 
-
-
-    <audio id="combinedAudioRecording" controls></audio>
     </div>
     <script src="assets/js/libs/jquery.min.js"></script>
     <script src="assets/js/libs/popper.min.js"></script>
@@ -380,7 +375,8 @@
 
     <script src="assets/js/libs/jssip-3.10.0.min.js"></script>
     <script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
-    <script src="assets/js/microphone.js"></script>
+    <script src="assets/js/preview-mic.js"></script>
+    <script src="assets/js/preview-speaker.js"></script>
 
     <script src="assets/js/callDuration.js"></script>
     <script src="assets/js/loadAudioFiles.js"></script>
