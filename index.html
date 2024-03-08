@@ -326,11 +326,10 @@
                     </div>
                     <div class="col-sm-12">
                         <select id="playbackSrc" class="form-select form-control"></select>
-                     
                         <div class="meter-speaker-preview">
                             <span id="speaker-level-preview" class="level-prev"></span>
                         </div>
-                        <button class="btn btn-primary mt-2" id="playButton">
+                        <button class="btn btn-primary mt-2" id="playSpeakerLevel">
                             <i class="fas fa-play"></i>
                         </button>
                     </div>
@@ -346,7 +345,7 @@
                                 <span id="ring-level-preview" class="level-prev"></span>
                             </div>
                         </div>
-                        <button class="btn btn-primary mt-2">
+                        <button class="btn btn-primary mt-2" id="playRingLevel">
                             <i class="fas fa-play"></i>
                         </button>
                     </div>
@@ -375,6 +374,7 @@
 
     <script src="assets/js/libs/jssip-3.10.0.min.js"></script>
     <script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
+    <script src="assets/js/index.js"></script>
     <script src="assets/js/preview-mic.js"></script>
     <script src="assets/js/preview-speaker.js"></script>
 
@@ -383,7 +383,7 @@
     <script src="assets/js/notificationApi.js"></script>
     <script src="assets/js/speaker.js"></script>
     <script src="assets/js/recording.js"></script>
-    <script src="assets/js/index.js"></script>
+    
     <script src="assets/js/connectToWS.js"></script>
     <script src="assets/js/login.js"></script>
     <script src="assets/js/addStream.js"></script>
