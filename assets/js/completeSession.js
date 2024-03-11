@@ -43,6 +43,8 @@ function completeSession() {
         .addClass("fa-mobile-retro");
     }, 2000);
 
+    $("#listExtension").html("")
+
 
     
       addToCallHistory(stateCall);

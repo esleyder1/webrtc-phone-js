@@ -350,16 +350,13 @@ jQuery(function () {
             device.label +
             "</option>"
         );
+        getAudioStream(device.deviceId);
       });
+
     })
     .catch(function (err) {
       console.error("Error al enumerar dispositivos de audio: " + err);
     });
 
-  // Manejar el cambio de dispositivo seleccionado (opcional)
-  $("#playbackSrc, #ringDevice, #microphoneSrc").change(function () {
-    var selectedDeviceId = $(this).val();
-    console.log("Dispositivo seleccionado:", selectedDeviceId);
-    // Aquí puedes realizar acciones adicionales, como actualizar la configuración de audio
-  });
+
 });
