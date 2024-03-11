@@ -9,6 +9,8 @@ jQuery(function () {
   let currentNotification = null;
   stateCall = null;
 
+  let statusCallInTransference
+
   /*Opciones de JSSIP*/
   let callOptions = {
     extraHeaders: ["X-Foo: foo", "X-Bar: bar"],
@@ -206,6 +208,7 @@ jQuery(function () {
     sessions.forEach((session) => {
       session.terminate();
     });
+    $("#listExtension").html("");
   });
 
   //Función que habilita el modo - Mute de la llamada.
@@ -326,6 +329,8 @@ jQuery(function () {
     const dest = $("#inputExtToConference").val();
     const identificator = localStorage.getItem("sipUsername");
     if (dest && dest !== identificator) {
+      addExtension("call",dest)
+      statusCallInTransference = "Llamando"
       phone.call(dest, callOptions);
     } else {
       alert("No puedes realizar una llamada a tu propio identificador.");
@@ -334,29 +339,46 @@ jQuery(function () {
   });
 
   navigator.mediaDevices
-    .enumerateDevices()
-    .then(function (devices) {
-      // Filtrar los dispositivos de audio
-      var audioDevices = devices.filter(function (device) {
-        return device.kind === "audioinput"; // Dispositivos de entrada de audio (micrófonos)
+  .enumerateDevices()
+  .then(function (devices) {
+      // Filtrar los dispositivos de audio de salida (altavoces)
+      var audioOutputDevices = devices.filter(function (device) {
+          return device.kind === "audiooutput"; // Dispositivos de salida de audio (altavoces)
       });
 
       // Llenar los selectores con los dispositivos encontrados
-      audioDevices.forEach(function (device) {
-        $("#playbackSrc, #ringDevice, #microphoneSrc").append(
-          '<option value="' +
-            device.deviceId +
-            '">' +
-            device.label +
-            "</option>"
-        );
-        getAudioStream(device.deviceId);
+      audioOutputDevices.forEach(function (device) {
+          $("#playbackSrc, #ringDevice").append(
+              '<option value="' +
+              device.deviceId +
+              '">' +
+              (device.label || 'Altavoces') + // Usar 'Altavoces' si no hay etiqueta disponible
+              "</option>"
+          );
       });
 
-    })
-    .catch(function (err) {
+      // Filtrar los dispositivos de entrada de audio (micrófonos)
+      var audioInputDevices = devices.filter(function (device) {
+          return device.kind === "audioinput"; // Dispositivos de entrada de audio (micrófonos)
+      });
+
+      // Llenar el selector con los micrófonos
+      audioInputDevices.forEach(function (device) {
+          $("#microphoneSrc").append(
+              '<option value="' +
+              device.deviceId +
+              '">' +
+              (device.label || 'Micrófono') + // Usar 'Micrófono' si no hay etiqueta disponible
+              "</option>"
+          );
+          getAudioStream(device.deviceId); // No estoy seguro de si deseas llamar a esta función aquí o no
+      });
+
+  })
+  .catch(function (err) {
       console.error("Error al enumerar dispositivos de audio: " + err);
-    });
+  });
+
 
 
 });

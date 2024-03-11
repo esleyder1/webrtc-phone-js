@@ -68,3 +68,17 @@
     font-size: 1.1em;
     font-weight: bold;
 }
+
+
+//conference
+p#dinamicStatusConference {
+    color: red;
+  }
+
+  .user-conf-extension span {
+    display: block;
+    width: 100%;
+}
+span.dinamicStatusConference {
+    font-size: 12px;
+}

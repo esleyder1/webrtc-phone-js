@@ -3,42 +3,70 @@ let isDND = false;
 let isAA = false;
 let userRemoteExtension = null;
 let loadCallHistoryInit = false;
-let causeCall = null
+let causeCall = null;
 
 function statusCall(status) {
   $("#statusCall").html(status);
 }
-function addExtension(name,extension) {
-  var listItem = $("<div>").addClass("list-group-item list-group-item-action flex-column align-items-start call-list-item");
-
-  // Contenido del elemento de lista
+function statusCallConference(extension, status) {
+  const foundSession = sessions.find(function (session) {
+    return session.remote_identity.uri.user === extension;
+  });
+  if (foundSession) {
+    let listItem = $("#listExtension")
+      .find("[data-extension='" + extension + "']")
+      .closest(".list-group-item");
+    listItem.find("span.dinamicStatusConference").text(status);
+  } else {
+    console.log("No session found for extension: " + extension);
+  }
+}
+function addExtension(type, extension) {
+  var listItem = $("<div>").addClass(
+    "list-group-item list-group-item-action flex-column align-items-start call-list-item"
+  );
   var content = $("<div>").addClass("d-flex w-100 justify-content-between");
+  var nameExtension = $("<div>").addClass("user-conf-extension");
 
-  // Nombre y extensión
-  var nameExtension = $("<div>").addClass("name-extension");
+  // Añadir extensión y estado
+  nameExtension.append(
+    $("<span>")
+      .addClass("extension")
+      .attr("data-extension", extension)
+      .text("Extensión: " + extension)
+  );
+  nameExtension.append(
+    $("<span>")
+      .addClass("dinamicStatusConference")
+      .text("Estado: " + type)
+  );
 
-  nameExtension.append($("<span>").addClass("extension").attr("data-extension", extension).text("Extensión: " + extension));
   content.append(nameExtension);
 
   // Botón de colgar con icono de Font Awesome
-  var hangUpBtn = $("<button>").addClass("hang-up-btn btn btn-danger").html('<i class="fa fa-phone hangup-call"></i>');
+  var hangUpBtn = $("<button>")
+    .addClass("hang-up-btn btn btn-danger")
+    .html('<i class="fa fa-phone hangup-call"></i>');
 
   // Agregar evento click al botón para la funcionalidad de colgar
-  hangUpBtn.click(function() {
+  hangUpBtn.click(function () {
     // Aquí puedes agregar la lógica para colgar la llamada
-    console.log("Colgar llamada de ",sessions);
-    var foundSession = sessions.find(function(session) {
+    console.log("Colgar llamada de ", sessions);
+
+    const foundSession = sessions.find(function (session) {
       return session.remote_identity.uri.user === extension;
     });
-
     if (foundSession) {
-        foundSession.terminate();
-        var listItem = $("#listExtension").find("[data-extension='" + extension + "']").closest(".list-group-item");
-        listItem.remove();
+      var listItem = $("#listExtension")
+        .find("[data-extension='" + extension + "']")
+        .closest(".list-group-item");
+      console.log("List", listItem);
+      listItem.remove();
+      foundSession.terminate();
     } else {
-        console.log("No session found for extension: " + extension);
+      console.log("No session found for extension: " + extension);
     }
-    
+
     /* sessions.forEach((session) => {
       session.terminate();
     }); */
@@ -48,10 +76,8 @@ function addExtension(name,extension) {
   // Agregar contenido al elemento de lista
   listItem.append(content);
 
-
   // Agregar el elemento de lista al contenedor
   $("#listExtension").append(listItem);
-
 }
 // Función para conectar con el WebSocket
 function connectToWS(configuration) {
@@ -120,36 +146,41 @@ function connectToWS(configuration) {
       }
       // session handlers/callbacks
       sessions.forEach((session) => {
+        const ext = session.remote_identity.uri.user;
         session.on("peerconnection", function (e) {
           statusCall("Conexión Establecida");
         });
         session.on("connecting", function (e) {
-          const ext = session.remote_identity.uri.user;
+          
           statusCall("Llamando a: " + ext);
           $("#btnRejectCall").show();
+          statusCallConference(ext,"Llamando...")
         });
         session.on("process", function (e) {
           statusCall("Procesando Llamada");
         });
         session.on("ended", function (e) {
           statusCall("Llamada Finalizada");
-          causeCall = e.cause
-          completeSession();
+         
+          statusCallConference(ext,"Llamada finalizada")
+          causeCall = e.cause;
+          completeSession(ext);
         });
         session.on("failed", function (e) {
-
-          causeCall = e.cause
+          causeCall = e.cause;
           statusCall("Llamada Fallida");
+          statusCallConference(ext,"Llamada fallida")
           $("#mobile-status-icon")
             .removeClass("fa-mobile-retro")
             .addClass("fa-phone-slash")
             .css("color", "red");
           setTimeout(() => {
-            completeSession();
+            completeSession(e);
           }, 1000);
         });
         session.on("accepted", function (e) {
           statusCall("Llamada Aceptada");
+          statusCallConference(ext,"Llamada aceptada")
           updateUI();
         });
         session.on("confirmed", function (e) {
@@ -161,7 +192,7 @@ function connectToWS(configuration) {
 
           statusCall("number of remote streams: " + remoteStreams.length);
           updateUI();
-          addExtension("Name",session.remote_identity.uri.user);
+          //addExtension("Name", session.remote_identity.uri.user);
         });
         session.on("newInfo", function (data) {
           const customHeader = data.request.getHeader("X-MyCustom-Message");
@@ -203,7 +234,9 @@ function updateUI() {
 
     if (sessions && sessions.length > 0) {
       sessions.forEach((session) => {
+        
         if (session) {
+          const ext = session.remote_identity.uri.user;
           //statusCall("valid session");
           if (session.isInProgress()) {
             if (session.direction === "incoming" && callTaked == false) {
@@ -218,6 +251,7 @@ function updateUI() {
               deleteRowByUserId(userId);
             } else {
               statusCall("Timbrando...");
+              statusCallConference(ext,"Timbrando...")
               $("#callInfoText").html("Timbrando...");
               $("#mobile-status-icon")
                 .removeClass("fa-phone-slash")
@@ -232,6 +266,7 @@ function updateUI() {
             }
           } else if (session.isEstablished()) {
             statusCall("¡Llamada en progreso!");
+            $("#dinamicStatusConference").html("¡Llamada en progreso!");
 
             // Iniciar el temporizador
             startTimer();
@@ -290,22 +325,20 @@ function updateUI() {
 }
 
 function loadCallHistory() {
-
-  loadCallHistoryInit = true
+  loadCallHistoryInit = true;
 
   // Get existing call history from localStorage
   let callHistory = getCallHistory();
 
   if (Object.keys(callHistory).length === 0) {
-    const calltag = '<li class="list-group-item text-muted">El historial de llamadas está vacío</li>';
+    const calltag =
+      '<li class="list-group-item text-muted">El historial de llamadas está vacío</li>';
     $("#call-history").html(calltag);
-  }else{
+  } else {
     callHistory.forEach(function (call) {
       addCall(call);
     });
   }
-
- 
 }
 
 function formatDuration(seconds) {
@@ -339,28 +372,28 @@ function addCall(call) {
     message = "Rechazaste una llamada";
     icon = '<i class="fas fa-times-circle"></i>';
     color = "text-warning";
-  } 
-  if(call.cause === "Not Found") {
+  }
+  if (call.cause === "Not Found") {
     message = "Realizaste una llamada y no fue encontrado";
     icon = '<i class="fas fa-phone-slash"></i>';
     color = "text-danger";
   }
-  if(call.cause === "Busy") {
+  if (call.cause === "Busy") {
     message = "Realizaste una llamada y estaba ocupado";
     icon = '<i class="fas fa-phone-slash"></i>';
     color = "text-danger";
   }
-  if(call.cause === "No Answer") {
+  if (call.cause === "No Answer") {
     message = "Perdiste una llamada";
     icon = '<i class="fas fa-phone-slash"></i>';
     color = "text-danger";
   }
-  if(call.cause === "Canceled" && call.type === "answer") {
+  if (call.cause === "Canceled" && call.type === "answer") {
     message = "Llamada entrante, cancelada por el usuario";
     icon = '<i class="fas fa-phone-slash"></i>';
     color = "text-danger";
   }
-  if(call.cause === "Canceled" && call.type === "call") {
+  if (call.cause === "Canceled" && call.type === "call") {
     message = "Llamada saliente, cancelada por el agente";
     icon = '<i class="fas fa-phone-slash"></i>';
     color = "text-danger";
@@ -398,7 +431,7 @@ function addCall(call) {
     message;
 
   // Agregar duración solo si no es una llamada rechazada
-  if (call.type !== "reject" &&  call.cause === 'Terminated') {
+  if (call.type !== "reject" && call.cause === "Terminated") {
     calltag +=
       '<span class="call-duration ms-1">y hablaste durante ' +
       formatDuration(call.duration) +
@@ -418,11 +451,10 @@ function addCall(call) {
 
   calltag += "</span>" + "</li>";
 
-  if(message !== undefined) {
-  $("#call-history").prepend(calltag);
+  if (message !== undefined) {
+    $("#call-history").prepend(calltag);
   }
-  causeCall = null
-  
+  causeCall = null;
 }
 
 function getCallHistory() {
@@ -433,23 +465,23 @@ function getCallHistory() {
 function addToCallHistory(type) {
   //type = 'answer','call,'hangup','reject'
   // Create a call object with current timestamp
-  
+
   let call = {
     type: type,
     duration: callDuration,
     timestamp: new Date(),
     icon: "",
     user: userRemoteExtension,
-    cause: causeCall
+    cause: causeCall,
   };
-  let callHistory = getCallHistory(); 
+  let callHistory = getCallHistory();
   // Get existing call history from localStorage
   callHistory.push(call);
 
   // Verificar si el almacenamiento local está vacío
-if (localStorage.getItem("callHistory") === null) {
-  $("#call-history").html("")
-}
+  if (localStorage.getItem("callHistory") === null) {
+    $("#call-history").html("");
+  }
   localStorage.setItem("callHistory", JSON.stringify(callHistory));
   addCall(call);
 }
