@@ -58,23 +58,8 @@ async function getAudioStream(selectedDeviceId) {
     }
 }
 
-// Iniciar el acceso al micrófono y la visualización del nivel de decibelios
-navigator.mediaDevices.getUserMedia({ audio: true })
-    .then(function(stream) {
-        // Guardar referencia al flujo de audio inicial
-        mediaStream = stream;
-
-        // Resto del código para configurar el análisis de audio y visualización del nivel de decibelios
-        // Llamada a la función para configurar el análisis de audio con el flujo de audio inicial
-        const selectedDeviceId = 'default'; // Puedes usar 'default' para el dispositivo predeterminado
-        getAudioStream(selectedDeviceId);
-    })
-    .catch(function(err) {
-        console.error('Error al acceder al micrófono:', err);
-    });
 
 $('#microphoneSrc').change(function () {
     var selectedDeviceId = $(this).val();
-    // Llamar a la función getAudioStream para cambiar el dispositivo de entrada de audio
     getAudioStream(selectedDeviceId);
 });
