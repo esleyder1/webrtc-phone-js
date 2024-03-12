@@ -162,16 +162,13 @@ jQuery(function () {
 
   //Función para llamar a una extensión (botón llamar)
   $("#connectCall").click(function () {
+     updateUI();
     const dest = $("#toField").val();
     //statusCall("Calling");
     const identificator = localStorage.getItem("sipUsername");
     if (dest !== "" && dest !== identificator) {
       phone.call(dest, callOptions);
       localStorage.setItem("latestCall", dest);
-    }
-    let latestCall = localStorage.getItem("latestCall");
-    if (dest === identificator) {
-      alert("No puedes realizar una llamada a tu propio identificador.");
     }
 
     $("#toField").val("");
@@ -181,7 +178,7 @@ jQuery(function () {
     callDuration = 0;
     stateCall = "call";
 
-    updateUI();
+   
     addStreams();
   });
 
@@ -206,6 +203,7 @@ jQuery(function () {
     stateCall = stateCall || type;
 
     sessions.forEach((session) => {
+      console.log(session)
       session.terminate();
     });
     $("#listExtension").html("");

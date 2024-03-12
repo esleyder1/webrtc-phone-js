@@ -153,7 +153,13 @@ function connectToWS(configuration) {
         session.on("connecting", function (e) {
           
           statusCall("Llamando a: " + ext);
-          $("#btnRejectCall").show();
+          $("#connectCall").animate({
+            opacity: 0, // Hacer que la opacidad sea 0 para que desaparezca gradualmente
+        },500, function() {
+          $("#connectCall").css('opacity',1).hide()
+            $("#btnRejectCall").show();
+          });
+          //$("#btnRejectCall").show();
           statusCallConference(ext,"Llamando...")
         });
         session.on("process", function (e) {
@@ -267,9 +273,8 @@ function updateUI() {
           } else if (session.isEstablished()) {
             statusCall("¡Llamada en progreso!");
             $("#dinamicStatusConference").html("¡Llamada en progreso!");
-
-            // Iniciar el temporizador
-            startTimer();
+           
+            
             $("#mobile-status-icon")
               .removeClass("fa-phone-slash")
               .addClass("fa-phone-volume")
@@ -282,20 +287,29 @@ function updateUI() {
 
             //$("#inCallButtons").show();
             $("#callerId").text(session.remote_identity.uri.user);
-            $("#wrapCallerId").show();
-            $("#wrapTimerId").show();
-            $("#optionsInCall").show();
-            $("#info-micro").removeClass("align-left");
+  
+            
+    
+            
             incomingCallAudio.pause();
 
             $("#wrapOptions").show();
-            $("#connectCall").hide();
-            $("#btnRejectCall").show();
+           
+            
 
             $("#to").show();
 
             $("#incomming").hide();
-
+       
+             
+              $("#optionsInCall").show();
+              $("#wrapCallerId").show();
+              $("#wrapTimerId").show();
+       
+           
+            // Iniciar el temporizador
+            startTimer();
+            $("#info-micro").removeClass("align-left");
             //$("#callControl").hide();
           }
         } else {
