@@ -78,6 +78,16 @@ function addExtension(type, extension) {
 
   // Agregar el elemento de lista al contenedor
   $("#listExtension").append(listItem);
+
+}
+
+function addToCounterConference(){
+ 
+  
+  let numberOfElements = $('#listExtension').children().length;
+  // Increment the value of the span inside the badge
+  let span = $('#counterConference');
+  span.text(numberOfElements);
 }
 // Función para conectar con el WebSocket
 function connectToWS(configuration) {
@@ -187,6 +197,7 @@ function connectToWS(configuration) {
         session.on("accepted", function (e) {
           statusCall("Llamada Aceptada");
           statusCallConference(ext,"Llamada aceptada")
+          addToCounterConference()
           updateUI();
         });
         session.on("confirmed", function (e) {
@@ -310,6 +321,7 @@ function updateUI() {
             // Iniciar el temporizador
             startTimer();
             $("#info-micro").removeClass("align-left");
+            
             //$("#callControl").hide();
           }
         } else {

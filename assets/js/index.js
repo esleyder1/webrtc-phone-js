@@ -26,8 +26,17 @@ jQuery(function () {
     title: "Transferir llamada",
     content: $('[data-name="popover-content"]'),
   };
-  var transferPopover = document.getElementById("transferPopover");
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+    bootstrap.Tooltip.getOrCreateInstance(tooltipTriggerEl)
+  })
+    var transferPopover = document.getElementById("transferPopover");
   new bootstrap.Popover(transferPopover, options);
+
+  $("#joinCall").click(function () {
+    $('#offcanvasConference').offcanvas('toggle')
+  });
+
 
   $("#transferPopover").click(function () {
     $("#btnHoldUnhold").click();
@@ -169,6 +178,7 @@ jQuery(function () {
     if (dest !== "" && dest !== identificator) {
       phone.call(dest, callOptions);
       localStorage.setItem("latestCall", dest);
+      statusCallConference(dest,"Llamando...")
     }
 
     $("#toField").val("");
@@ -178,8 +188,9 @@ jQuery(function () {
     callDuration = 0;
     stateCall = "call";
 
-   
+    addExtension('Llamando...', dest)
     addStreams();
+
   });
 
   //Función para responder la llamada

@@ -61,6 +61,7 @@ function completeSession(extension) {
   stateCall = null;
   stopTimer();
   updateUI();
+  addToCounterConference()
 }
 
 

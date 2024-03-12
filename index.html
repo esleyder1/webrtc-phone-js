@@ -92,7 +92,8 @@
                                 <div class="wrapTitleLogout">
                                     <div class="wrapTitle">
                                         <p id="title">Bestvoiper</p>
-                                        <div class="settings">
+                                        <div class="settings" data-bs-toggle="tooltip" data-bs-placement="left"
+                                            title="Opciones">
                                             <button class="btn-round btn-settings btn btn-light"
                                                 data-bs-toggle="dropdown"><i class="fa fa-gear"></i></button>
                                             <ul class="dropdown-menu">
@@ -122,14 +123,15 @@
                                 <div class="info-status"><i class="fa-solid fa-mobile-retro"
                                         id="mobile-status-icon"></i> <span id="statusCall" class="small text">version:
                                         1.0</span></div>
-                                <div class="info-status" id="wrapCallerId" style="display: none"><i
-                                        class="fa-solid fa-user" id="mobile-user-icon"></i> <span id="callerId"
-                                        class="small text">Usuario</span>
-                                </div>
                                 <div class="info-status" id="wrapTimerId" style="display: none"><i
                                         class="fa-solid fa-clock" id="mobile-time-icon"></i> <span id="timerId"
                                         class="small text">00:00</span>
                                 </div>
+                                <div class="info-status" id="wrapCallerId" style="display: none"><i
+                                        class="fa-solid fa-user" id="mobile-user-icon"></i> <span id="callerId"
+                                        class="small text">Usuario</span>
+                                </div>
+
 
 
                             </div>
@@ -223,24 +225,35 @@
                                             <div id="optionsInCall" class="col align-self-center"
                                                 style="display: none;">
 
-                                                <button id="mute" class="btn btn-light"><i
+                                                <button id="mute" class="btn btn-light" data-bs-toggle="tooltip"
+                                                    data-bs-placement="top" title="Mutear"><i
                                                         class="fa-solid fa-microphone"></i></button>
-                                                <button id="btnHoldUnhold" class="btn btn-light"><i
+                                                <button id="btnHoldUnhold" class="btn btn-light"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                                    title="Poner en espera"><i
                                                         class="fa-solid fa-circle-pause"></i></button>
                                                 <button id="transferPopover" class="btnTransfer btn btn-light"
-                                                    data-bs-placement="top" data-bs-toggle="popover"
+                                                    data-toggle="popover" data-bs-toggle="tooltip"
+                                                    data-bs-placement="top" title="Conferencia"
                                                     title="Transferir llamada"><i
                                                         class="fa-solid fa-reply icon-reply"></i></button>
-                                                <button id="joinCall" class="btn btn-light" data-bs-toggle="offcanvas"
-                                                    data-bs-target="#offcanvasConference"
-                                                    aria-controls="offcanvasConference"><i
-                                                        class="fa fa-user-group"></i></button>
+                                                <button id="joinCall" class="btn btn-light position-relative"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Conferencia"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#offcanvasConference"
+                                                    aria-controls="offcanvasConference"><i class="fa fa-user-group"></i>
+                                                    <span id="counterConference"
+                                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                        0
+                                                    </span>
+                                                </button>
                                             </div>
                                         </div>
 
                                         <div class="col align-self-center" id="phone-options">
-                                            <span class="badge text-bg-ligth" id="btnDND">DND</span>
-                                            <span class="badge text-bg-ligth" id="btnAA">AA</span>
+                                            <span class="badge text-bg-ligth" id="btnDND" data-bs-toggle="tooltip"
+                                                data-bs-placement="bottom" title="Denegar llamadas">DND</span>
+                                            <span class="badge text-bg-ligth" id="btnAA" data-bs-toggle="tooltip"
+                                                data-bs-placement="bottom" title="Respuesta automática">AA</span>
                                         </div>
                                     </div>
                                 </div>
@@ -282,7 +295,7 @@
         </div>
         <div class="offcanvas-body">
             <ul id="listExtension" class="list-group"></ul>
-            
+
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Extensión" id="inputExtToConference">
                 <button type="submit" class="btn btn-primary" id="btnAddToConference">Llamar</button>
@@ -319,7 +332,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-            <div id="options-view" >
+            <div id="options-view">
                 <div class="row mb-3">
                     <div class="col-sm-12">
                         <label for="playbackSrc">Altavoz:</label>
@@ -383,7 +396,7 @@
     <script src="assets/js/notificationApi.js"></script>
     <script src="assets/js/speaker.js"></script>
     <script src="assets/js/recording.js"></script>
-    
+
     <script src="assets/js/connectToWS.js"></script>
     <script src="assets/js/login.js"></script>
     <script src="assets/js/addStream.js"></script>
